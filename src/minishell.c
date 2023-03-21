@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/03/21 08:55:46 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/03/21 09:10:46 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,15 +26,13 @@ char *read_cmd_line(void)
 	int buffer_size;
 	int position;
 	char *buffer;
-	char *c;
+	int *c;
 
 	position = 0;
 	buffer_size = MSH_BUFFER_SIZE;
 	buffer = malloc(sizeof(char) * buffer_size);
-	if (!buffer)
-		msh_error(1);
-	c = malloc(sizeof(char) * 1);
-	if (!c)
+	c = malloc(sizeof(int) * 1);
+	if (!buffer || !c)
 		msh_error(1);
 	while(1)
 	{
@@ -46,11 +44,6 @@ char *read_cmd_line(void)
 		}
 		buffer[position] = c[0];
 		position++;
-
-		//if (position >= buffer_size) {
-		//	buffer_size += MSH_BUFFER_SIZE;
-		//	buffer = ft_
-		//}
 	}
 }
 
