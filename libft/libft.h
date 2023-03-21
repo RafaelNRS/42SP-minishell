@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ranascim <ranascim@42.student.42sp.org.    +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/10 20:49:42 by ranascim          #+#    #+#             */
-/*   Updated: 2022/05/10 18:57:34 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/03/21 08:14:45 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # define HEXLOWER "0123456789abcdef"
 # define HEXUPPER "0123456789ABCDEF"
 # define DECIMAL "0123456789"
+# define BUFFER_SIZE ""
 
 typedef struct s_list
 {
@@ -75,7 +76,7 @@ char	*ft_strdup(const char *s);
 
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 
-char	*ft_strjoin(char const *s1, char const *s2);
+char	*ft_strjoin(char *s1, char const *s2);
 
 char	*ft_strtrim(char const *s1, char const *set);
 
@@ -124,5 +125,7 @@ int		ft_print_p(unsigned long p);
 int		ft_print_d(int d);
 
 int		ft_put_base(unsigned long n, unsigned long n_base, char *base);
+
+char	*get_next_line(int fd, int buffer_size);
 
 #endif
