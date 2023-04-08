@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/08 10:05:27 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/04/08 10:08:48 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,11 +71,9 @@ char **msh_split_line(char *line)
 void minishell_loop(void)
 {
 	char *cmd_line;
-	//char **tokens;
-	//int status;
-	//int i;
+	char **tokens;
+	//char **args;
 	
-	//i = 0;
 	while (true)
 	{
 		signal(SIGQUIT, SIG_IGN);
