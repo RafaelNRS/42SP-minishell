@@ -24,7 +24,7 @@ $(BINARY_OUT_PROJ): $(SRC_CLIENT_PATH)
 	@ $(MAKE) -C $(LIBFT_DIR)
 	@ cp $(LIBFT) $(NAME_PROJECT)
 	@ mkdir -p $(BIN)
-	@ $(CC) $(CFLAGS) $(SRC_CLIENT_PATH) -I $(INCLUDE_DIR) -I $(HEADER_LIBFT) -L $(LIBFT_DIR) -lft -o $(NAME_PROJECT)
+	@ $(CC) $(CFLAGS) $(SRC_CLIENT_PATH) -I $(INCLUDE_DIR) -I $(HEADER_LIBFT) -L $(LIBFT_DIR) -lft -lreadline -o $(NAME_PROJECT)
 	@ mv $(NAME_PROJECT) $(BIN)
 
 clean:

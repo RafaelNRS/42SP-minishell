@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/07 00:41:58 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/04/08 10:05:27 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,37 +15,32 @@
 void msh_error(int error_code)
 {
 	if (error_code == 1)
-	{
 		write(2,"minishell: Memory allocation error\n",35);
-		exit(1);
+	else if (error_code == 2)
+		write(2,"minishell: Too many arguments\n",30);
+
+	exit(1);
+}
+
+static void sig_handler(int signal)
+{
+	if (signal == SIGINT)
+	{
+		write(1, "\n", 1);
+		rl_replace_line("", 0);
+		rl_on_new_line();
+		rl_redisplay();
 	}
 }
 
-char *read_cmd_line(void)
+static void	read_cmd_line(char **cmd_line)
 {
-	int buffer_size;
-	int position;
 	char *buffer;
-	int *c;
 
-	position = 0;
-	buffer_size = MSH_LINE_BUFFER_SIZE;
-	buffer = malloc(sizeof(char) * buffer_size);
-	c = malloc(sizeof(int) * 1);
-	if (!buffer || !c)
-		msh_error(1);
-	while(1)
-	{
-		read(0, c, 1);
-		if (c[0] == '\n')
-		{
-			buffer[position] = '\0';
-			return buffer;
-		}
-		buffer[position] = c[0];
-		position++;
-	}
-	// Needs a realloc() implementation if the position exceeds the buffer_size
+	buffer = "\033[1;96mminishell>";
+	//ft_printf("\033[1;96mminishell>");
+	*cmd_line = readline(buffer);
+	//free(buffer);
 }
 
 char **msh_split_line(char *line)
@@ -76,30 +71,40 @@ char **msh_split_line(char *line)
 void minishell_loop(void)
 {
 	char *cmd_line;
-	char **tokens;
-	//char **args;
-	int status;
-	int i;
+	//char **tokens;
+	//int status;
+	//int i;
 	
-	i = 0;
-	status = 999;
-	while (status == 999)
+	//i = 0;
+	while (true)
 	{
-		ft_printf("\033[1;96mminishell>");
-		cmd_line = read_cmd_line();
-		ft_printf("%s\n",cmd_line);
-		tokens = msh_split_line(cmd_line);
-		while (tokens[i])
+		signal(SIGQUIT, SIG_IGN);
+		signal(SIGINT, sig_handler);
+		read_cmd_line(&cmd_line);
+		if (ft_strlen(cmd_line) == 0)
 		{
-			ft_printf("Token %d: %s\n",i, tokens[i]);
-			i++;
-		} 
-		status = 0;
+			free(cmd_line);
+			continue;
+		}
+		// ft_printf("%s\n",cmd_line);
+		// tokens = msh_split_line(cmd_line);
+		// while (tokens[i])
+		// {
+		// 	ft_printf("Token %d: %s\n",i, tokens[i]);
+		// 	i++;
+		// }
+		if (cmd_line)
+			free(cmd_line);
+		exit(0);
 	}
 }
 
-int main(void)
+
+
+int main(int argc, char **argv)
 {
+	if (argc > 1 && argv)
+		msh_error(2);
 	//TODO: Load config files
 	minishell_loop();
 	
