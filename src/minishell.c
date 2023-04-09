@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/09 12:35:28 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/09 13:52:23 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void msh_error(int error_code)
 	else if (error_code == 2)
 		write(2,"minishell: Too many arguments\n",30);
 	else if (error_code == 3)
-		write(2, "Bolinha\n", 8);
+		write(2, "Max limit?\n", 10);
 	exit(1);
 }
 
@@ -89,7 +89,6 @@ void minishell_loop(void)
 	}
 }
 
-
 int	hash_function(char *key, int size)
 {
 	int	i;
@@ -136,6 +135,8 @@ void	add_new_item(char *var, h_table *table)
 	int 	hash_index;
 	// unsigned long int
 
+	if (table->count == table->size)
+		msh_error(3);
 	new_item = create_new_item(var);
 	hash_index = hash_function(new_item->key, table->size);
 	
@@ -179,6 +180,7 @@ h_table *create_table(int size)
 	new_table = (h_table *)ft_calloc(sizeof(h_table), 1);
 	new_table->size = size;
 	new_table->count = 0;
+	// ????
 	new_table->bucket_items = (h_item **)ft_calloc(sizeof(h_table), size);
 	i = 0;
 	while (i < size)
@@ -189,7 +191,7 @@ h_table *create_table(int size)
 	return (new_table);
 }
 
-void alloc_hash_table(char **env)
+h_table *alloc_hash_table(char **env)
 {
 	int i;
 	int size;
@@ -205,19 +207,43 @@ void alloc_hash_table(char **env)
 		add_new_item(env[i], table);
 		i++;
 	}
+	return (table);
+}
+
+void print_table(h_table *hash_env)
+{
+	int i;
+	int j;
+	h_item *current;
+
+	i = 0;
+	j= 0;
+	while(i < hash_env->count)
+	{
+		current = hash_env->bucket_items[j];
+		while (current)
+		{
+            printf("Key %d: %s, Value:%s\n", j, current->key, current-> value);
+			i++;
+			if(current->next)
+				current = current->next;
+			else
+				break;
+		}
+		j++;
+	}
 }
 
 int main(int argc, char **argv)
 {
-	// h_table *hash_env;
+	h_table *hash_env;
 
 	if (argc > 1 && argv)
 		msh_error(2);
 
 	//TODO: Load config files
-	alloc_hash_table(__environ);
-
-	// printf("size %d, count %d\n", hash_env->size, hash_env->count);
+	hash_env = alloc_hash_table(__environ);
+	print_table(hash_env);
 
 	// minishell_loop();
 
