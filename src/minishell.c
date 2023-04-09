@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/09 13:52:23 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/09 14:16:20 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,6 +234,25 @@ void print_table(h_table *hash_env)
 	}
 }
 
+char *ht_search(h_table *table, char *key)
+{
+	int index;
+	h_item *current;
+
+	index = hash_function(key, table->size);
+	current = table->bucket_items[index];
+	while (current)
+	{
+		if (strcmp(current->key, key) == 0)
+			return current->value;
+		else
+			current = current->next;
+	}
+	if (!current)
+		printf("command not found %s\n", key); // deveria fazer um exit
+	return NULL;
+}
+
 int main(int argc, char **argv)
 {
 	h_table *hash_env;
@@ -243,7 +262,8 @@ int main(int argc, char **argv)
 
 	//TODO: Load config files
 	hash_env = alloc_hash_table(__environ);
-	print_table(hash_env);
+	// print_table(hash_env);
+	printf("found - %s", ht_search(hash_env, "TERM_PROGRAM"));
 
 	// minishell_loop();
 
