@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/08 23:56:34 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/09 12:35:28 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,28 +89,21 @@ void minishell_loop(void)
 	}
 }
 
-char	*ft_copy_str(char *src)
-{
-	int		size;
-	int		i;
-	char	*copy_src;
 
-	size = 0;
-	size = ft_strlen(src);
-	if (size == 0)
-		return (NULL);
+int	hash_function(char *key, int size)
+{
+	int	i;
+	int j;
+
 	i = 0;
-	copy_src = (char *) malloc(sizeof(char) * size + 1);
-	while (src[i])
-	{
-		copy_src[i] = src[i];
-		i++;
-	}
-	copy_src[i] = '\0';
-	return (copy_src);
+	j = 0;
+	while (key[j++])
+		i += key[j];
+
+    return i % size;
 }
 
-void	create_new_item(char *var, h_table *table)
+h_item	*create_new_item(char *var)
 {
 	char	**env_values;
 	h_item	*new_item;
@@ -119,15 +112,63 @@ void	create_new_item(char *var, h_table *table)
 	new_item = (h_item *)ft_calloc(sizeof(h_item), 1);
 	if (!new_item)
 		msh_error(2);
-    new_item->key = ft_copy_str(env_values[0]);
-    new_item->value = ft_copy_str(env_values[1]);
-	free(env_values);
+	new_item->key = ft_strdup(env_values[0]);
+	if (env_values[1])
+		new_item->value = ft_strdup(env_values[1]);
+	else
+		new_item->value = NULL;
     new_item->next = NULL;
-	if (!new_item->key || !new_item->value)
-		msh_error(2);
-	table->bucket_items[0] = new_item;
-	printf("key %s\n", table->bucket_items[0]->key);
-	printf("valye %s\n", table->bucket_items[0]->value);
+	free(env_values);
+	return (new_item);
+}
+
+void free_item(h_item *item)
+{
+	free(item->key);
+	free(item->value);
+	free(item);
+}
+
+void	add_new_item(char *var, h_table *table)
+{
+	h_item	*new_item;
+	h_item	*current;
+	int 	hash_index;
+	// unsigned long int
+
+	new_item = create_new_item(var);
+	hash_index = hash_function(new_item->key, table->size);
+	
+	current = table->bucket_items[hash_index];
+	if (!current)
+	{
+		table->bucket_items[hash_index] = new_item;
+		table->count++;
+	}
+	else
+	{
+		while(current)
+		{
+			if (ft_strncmp(current->key, new_item->key, ft_strlen(new_item->key) + 1) == 0)
+			{
+				free(current->value);
+				current->value = ft_strdup(new_item->value);
+				free_item(new_item);
+				return;
+			}
+			else
+			{
+				if (current->next)
+					current = current->next;
+				else
+				{
+					current->next = new_item;
+					table->count++;
+					break;
+				}
+			}
+		}
+	}
 }
 
 h_table *create_table(int size)
@@ -150,7 +191,7 @@ h_table *create_table(int size)
 
 void alloc_hash_table(char **env)
 {
-	// int i;
+	int i;
 	int size;
 	h_table *table;
 
@@ -158,9 +199,12 @@ void alloc_hash_table(char **env)
 	while (env[size])
 		size++;
 	table = create_table(size * 2);
-	// i = 0;
-	create_new_item(env[0], table);
-	// while (env[i])
+	i = 0;
+	while (env[i])
+	{
+		add_new_item(env[i], table);
+		i++;
+	}
 }
 
 int main(int argc, char **argv)
