@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/09 14:16:20 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/09 21:06:14 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ void free_item(h_item *item)
 	free(item);
 }
 
-void	add_new_item(char *var, h_table *table)
+void	add_h_item(char *var, h_table *table)
 {
 	h_item	*new_item;
 	h_item	*current;
@@ -204,7 +204,7 @@ h_table *alloc_hash_table(char **env)
 	i = 0;
 	while (env[i])
 	{
-		add_new_item(env[i], table);
+		add_h_item(env[i], table);
 		i++;
 	}
 	return (table);
@@ -243,7 +243,7 @@ char *ht_search(h_table *table, char *key)
 	current = table->bucket_items[index];
 	while (current)
 	{
-		if (strcmp(current->key, key) == 0)
+		if (strcmp(current->key, key) == 0) //ft_strncmp change ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0
 			return current->value;
 		else
 			current = current->next;
@@ -253,18 +253,56 @@ char *ht_search(h_table *table, char *key)
 	return NULL;
 }
 
+void delete_item(h_table *table, char *key)
+{
+	int index;
+	h_item *current;
+	h_item *tmp_item;
+
+	index = hash_function(key, table->size);
+	current = table->bucket_items[index];
+	if (!current)
+		return;
+	if (strcmp(current->key, key) == 0)
+	{
+		if (current->next)
+			table->bucket_items[index] = current->next;
+		else
+			table->bucket_items[index] = NULL;
+		free_item(current);
+		table->count--;
+		return;
+	}
+	else
+	{
+		while(current->next)
+		{
+			if (ft_strncmp(current->next->key, key, ft_strlen(key) + 1) == 0)
+			{
+				tmp_item = current->next;
+				current->next = current->next->next;
+				free_item(tmp_item);
+				table->count--;
+				return;
+			}
+			current = current->next;
+		}
+	}
+}
+
 int main(int argc, char **argv)
 {
-	h_table *hash_env;
+	h_table *table;
 
 	if (argc > 1 && argv)
 		msh_error(2);
 
 	//TODO: Load config files
-	hash_env = alloc_hash_table(__environ);
-	// print_table(hash_env);
-	printf("found - %s", ht_search(hash_env, "TERM_PROGRAM"));
-
+	table = alloc_hash_table(__environ);
+	// printf("found - %s", ht_search(table, "TERM_PROGRAM"));
+	// add_h_item("test=a", table); // dif from "test='a'"
+	delete_item(table, "bolinha");
+	print_table(table);
 	// minishell_loop();
 
 	//TODO: Perform cleanup
