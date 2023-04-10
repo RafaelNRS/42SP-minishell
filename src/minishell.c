@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/09 21:06:14 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/09 21:12:22 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,7 +243,7 @@ char *ht_search(h_table *table, char *key)
 	current = table->bucket_items[index];
 	while (current)
 	{
-		if (strcmp(current->key, key) == 0) //ft_strncmp change ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0
+		if (ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
 			return current->value;
 		else
 			current = current->next;
@@ -263,7 +263,7 @@ void delete_item(h_table *table, char *key)
 	current = table->bucket_items[index];
 	if (!current)
 		return;
-	if (strcmp(current->key, key) == 0)
+	if (ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
 	{
 		if (current->next)
 			table->bucket_items[index] = current->next;
@@ -300,8 +300,9 @@ int main(int argc, char **argv)
 	//TODO: Load config files
 	table = alloc_hash_table(__environ);
 	// printf("found - %s", ht_search(table, "TERM_PROGRAM"));
-	// add_h_item("test=a", table); // dif from "test='a'"
-	delete_item(table, "bolinha");
+	add_h_item("test=a", table); // dif from "test='a'"
+	add_h_item("PWD=a", table);
+	delete_item(table, "PWD");
 	print_table(table);
 	// minishell_loop();
 
