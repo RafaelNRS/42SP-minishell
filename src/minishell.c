@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/08 10:08:48 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/04/15 12:31:24 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,41 +38,80 @@ static void	read_cmd_line(char **cmd_line)
 	char *buffer;
 
 	buffer = "\033[1;96mminishell>";
-	//ft_printf("\033[1;96mminishell>");
 	*cmd_line = readline(buffer);
-	//free(buffer);
 }
 
-char **msh_split_line(char *line)
+static size_t	ft_word_count(const char *s, char c)
 {
-	int buffer_size;
-	//int position;
-	char **tokens;
-	//char **token;
+	size_t	count;
+	size_t	i;
+	int		word;
 
-	buffer_size = MSH_TOKEN_BUFFER_SIZE;
-	tokens = malloc(sizeof(char*) * buffer_size);
-	//position = 0;
-	if (!tokens)
-		msh_error(1);
-	// Needs a function to accept multiple delimiters
-	// token = ft_strtok(line, MSH_TOKEN_DELIMITER);
-	tokens = ft_split(line, ' ');
-	// while (token != NULL)
-	// {
-	// 	tokens[position] = token[position];
-	// 	position++;
-	// }
-	// tokens[position] = NULL;
-	return tokens;
-	// Needs a realloc() implementation if the position exceeds the buffer_size
+	count = 0;
+	i = 0;
+	word = 0;
+	while (s[i])
+	{
+		if (s[i] == c)
+			word = 0;
+		else if (s[i] != c && word == 0)
+		{
+			word = 1;
+			count++;
+		}
+		i++;
+	}
+	return (count);
+}
+
+static char	**ft_fill_str(char const *s, char c, char **str_arr, size_t wc)
+{
+	size_t	i;
+	int		j;
+	size_t	iwc;
+
+	i = 0;
+	iwc = 0;
+	while (iwc < wc)
+	{
+		j = 0;
+		if (s[i] != c && s[i] != '\0')
+		{
+			while (s[i + j] != '\0' && s[i + j] != c)
+				j++;
+			str_arr[iwc] = (char *) ft_calloc(j + 1, sizeof(char));
+			j = 0;
+			while (s[i + j] != '\0' && s[i + j] != c)
+			{
+				str_arr[iwc][j] = s[i + j];
+				j++;
+			}
+			iwc++;
+		}
+		i = i + j + 1;
+	}
+	return (str_arr);
+}
+
+char **ft_tokenize(char const *cmd_line, char separator)
+{
+	char **words;
+	int	word_count;
+
+	word_count = ft_word_count(cmd_line, separator);
+	if (word_count < 1)
+		return (NULL);
+	words = malloc((word_count + 1) * sizeof(char *));
+	if (words == NULL)
+		return (NULL);
+	words = ft_fill_str(cmd_line, separator, words, word_count);
+	int i = 0;
 }
 
 void minishell_loop(void)
 {
 	char *cmd_line;
 	char **tokens;
-	//char **args;
 	
 	while (true)
 	{
@@ -84,20 +123,13 @@ void minishell_loop(void)
 			free(cmd_line);
 			continue;
 		}
-		// ft_printf("%s\n",cmd_line);
-		// tokens = msh_split_line(cmd_line);
-		// while (tokens[i])
-		// {
-		// 	ft_printf("Token %d: %s\n",i, tokens[i]);
-		// 	i++;
-		// }
+		tokens = ft_tokenize(cmd_line, ' ');
+		free(tokens);
 		if (cmd_line)
 			free(cmd_line);
 		exit(0);
 	}
 }
-
-
 
 int main(int argc, char **argv)
 {
