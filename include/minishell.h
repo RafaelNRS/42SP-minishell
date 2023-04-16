@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/16 16:13:54 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/16 16:52:18 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ h_table *alloc_hash_table(char **env);
 void delete_item(h_table *table, char *key);
 char *ht_search(h_table *table, char *key);
 void print_table(h_table *hash_env);
+void	free_hash_table(h_table *table);
 
 char **ft_tokenize(char const *cmd_line, char separator);
 

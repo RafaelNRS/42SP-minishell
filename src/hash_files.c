@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/09 21:17:03 by mariana           #+#    #+#             */
-/*   Updated: 2023/04/09 21:21:58 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/16 16:51:07 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,28 @@ void free_item(h_item *item)
 	free(item->key);
 	free(item->value);
 	free(item);
+}
+
+void	free_hash_table(h_table *table)
+{
+	int		i;
+	h_item	*current;
+	h_item	*temp;
+
+	i = 0;
+	while (i < table->size)
+	{
+		current = table->bucket_items[i];
+		while (current != NULL)
+		{
+			temp = current->next;
+			free_item(current);
+			current = temp;
+		}
+		i++;
+	}
+	free(table->bucket_items);
+	free(table);
 }
 
 void	add_h_item(char *var, h_table *table)
