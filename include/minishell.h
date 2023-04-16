@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/16 16:07:50 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/16 16:13:54 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,19 @@ typedef struct h_table
 	int		size;
 	int		count;
 }	h_table;
+
+void msh_error(int error_code);
+
+// hash functions
+h_table *create_table(int size);
+h_item	*create_new_item(char *var);
+int	hash_function(char *key, int size);
+void free_item(h_item *item);
+void	add_h_item(char *var, h_table *table);
+h_table *alloc_hash_table(char **env);
+void delete_item(h_table *table, char *key);
+char *ht_search(h_table *table, char *key);
+void print_table(h_table *hash_env);
 
 char **ft_tokenize(char const *cmd_line, char separator);
 
