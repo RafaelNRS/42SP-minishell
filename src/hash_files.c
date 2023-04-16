@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/09 21:17:03 by mariana           #+#    #+#             */
-/*   Updated: 2023/04/16 20:01:24 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/16 20:25:55 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -269,10 +269,10 @@ void print_table(h_table *hash_env)
 		current = hash_env->bucket_items[j];
 		while (current)
 		{
-			write(1, current->key, ft_strlen(current->key));
-			write(1, "=", 1);
-			write(1, current-> value, ft_strlen(current-> value));
-			write(1, "\n", 1);
+			write(2, current->key, ft_strlen(current->key));
+			write(2, "=", 1);
+			write(2, current-> value, ft_strlen(current-> value));
+			write(2, "\n", 1);
 			i++;
 			if(current->next)
 				current = current->next;
