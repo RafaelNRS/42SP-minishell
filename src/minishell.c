@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/09 21:12:22 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/16 16:07:37 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,35 +43,11 @@ static void	read_cmd_line(char **cmd_line)
 	*cmd_line = readline(buffer);
 }
 
-char **msh_split_line(char *line)
-{
-	int buffer_size;
-	//int position;
-	char **tokens;
-	//char **token;
-
-	buffer_size = MSH_TOKEN_BUFFER_SIZE;
-	tokens = malloc(sizeof(char*) * buffer_size);
-	//position = 0;
-	if (!tokens)
-		msh_error(1);
-	// Needs a function to accept multiple delimiters
-	// token = ft_strtok(line, MSH_TOKEN_DELIMITER);
-	tokens = ft_split(line, ' ');
-	// while (token != NULL)
-	// {
-	// 	tokens[position] = token[position];
-	// 	position++;
-	// }
-	// tokens[position] = NULL;
-	return tokens;
-	// Needs a realloc() implementation if the position exceeds the buffer_size
-}
-
 void minishell_loop(void)
 {
 	char *cmd_line;
-
+	char **tokens;
+	
 	while (true)
 	{
 		// ?signal?
@@ -83,9 +59,11 @@ void minishell_loop(void)
 			free(cmd_line);
 			continue;
 		}
+		tokens = ft_tokenize(cmd_line, ' ');
+		free(tokens);
 		if (cmd_line)
 			free(cmd_line);
-		exit(0);
+		//exit(0);
 	}
 }
 

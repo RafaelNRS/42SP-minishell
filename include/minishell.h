@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/09 12:43:14 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/16 16:07:50 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,4 +37,7 @@ typedef struct h_table
 	int		size;
 	int		count;
 }	h_table;
+
+char **ft_tokenize(char const *cmd_line, char separator);
+
 #endif
