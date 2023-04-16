@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/15 12:31:24 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/04/16 09:30:25 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,71 +41,86 @@ static void	read_cmd_line(char **cmd_line)
 	*cmd_line = readline(buffer);
 }
 
-static size_t	ft_word_count(const char *s, char c)
+static size_t	ft_word_count(const char *s, char c, int i[3])
 {
-	size_t	count;
-	size_t	i;
-	int		word;
+	int	quotes[2];
 
-	count = 0;
-	i = 0;
-	word = 0;
-	while (s[i])
+	quotes[0] = 0;
+	quotes[1] = 0;
+	while (s[i[0]])
 	{
-		if (s[i] == c)
-			word = 0;
-		else if (s[i] != c && word == 0)
+		if (s[i[0]] != c)
 		{
-			word = 1;
-			count++;
+			i[1]++;
+			while ((s[i[0]] != c || quotes[0] == 1) && s[i[0]] != '\0')
+			{
+				if (!quotes[1] && (s[i[0]] == '\"' || s[i[0]] == '\''))
+					quotes[1] = s[i[0]];
+				quotes[0] = (quotes[0] + (s[i[0]] == quotes[1])) % 2;
+				quotes[1] *= quotes[0] != 0;
+				i[0]++;
+			}
+			if (quotes[0])
+				return (-1);
 		}
-		i++;
+		else
+			i[0]++;
 	}
-	return (count);
+	return (i[1]);
 }
 
-static char	**ft_fill_str(char const *s, char c, char **str_arr, size_t wc)
+static char	**ft_fill_str(char const *s, char c, char **str_arr, int i[3])
 {
-	size_t	i;
-	int		j;
-	size_t	iwc;
+	int	s_len;
+	int	quotes[2];
 
-	i = 0;
-	iwc = 0;
-	while (iwc < wc)
+	quotes[0] = 0;
+	quotes[1] = 0;
+	s_len = ft_strlen(s);
+	while (s[i[0]])
 	{
-		j = 0;
-		if (s[i] != c && s[i] != '\0')
+		while (s[i[0]] == c && s[i[0]] != '\0')
+			i[0]++;
+		i[1] = i[0];
+		while ((s[i[0]] != c || quotes[0] || quotes[1]) && s[i[0]])
 		{
-			while (s[i + j] != '\0' && s[i + j] != c)
-				j++;
-			str_arr[iwc] = (char *) ft_calloc(j + 1, sizeof(char));
-			j = 0;
-			while (s[i + j] != '\0' && s[i + j] != c)
-			{
-				str_arr[iwc][j] = s[i + j];
-				j++;
-			}
-			iwc++;
+			quotes[0] = (quotes[0] + (!quotes[1] && s[i[0]] == '\'')) % 2;
+			quotes[1] = (quotes[1] + (!quotes[0] && s[i[0]] == '\"')) % 2;
+			i[0]++;
 		}
-		i = i + j + 1;
+		if (i[1] >= s_len)
+			str_arr[i[2]++] = "\0";
+		else
+			str_arr[i[2]++] = ft_substr(s, i[1], i[0] - i[1]);
 	}
 	return (str_arr);
 }
 
 char **ft_tokenize(char const *cmd_line, char separator)
 {
-	char **words;
-	int	word_count;
+	char	**words;
+	int		word_count;
+	int		i[3];
 
-	word_count = ft_word_count(cmd_line, separator);
+	i[0] = 0;
+	i[1] = 0;
+	i[2] = 0;
+	word_count = ft_word_count(cmd_line, separator, i);
 	if (word_count < 1)
 		return (NULL);
 	words = malloc((word_count + 1) * sizeof(char *));
 	if (words == NULL)
 		return (NULL);
-	words = ft_fill_str(cmd_line, separator, words, word_count);
-	int i = 0;
+	i[0] = 0;
+	i[1] = 0;
+	words = ft_fill_str(cmd_line, separator, words, i);
+	int j = 0;
+	while (j < word_count)
+	{
+		ft_printf("Word %d: %s\n", j, words[j]);
+		j++;
+	}
+	return (words);
 }
 
 void minishell_loop(void)
@@ -127,7 +142,7 @@ void minishell_loop(void)
 		free(tokens);
 		if (cmd_line)
 			free(cmd_line);
-		exit(0);
+		//exit(0);
 	}
 }
 
