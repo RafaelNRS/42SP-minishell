@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/09 21:17:03 by mariana           #+#    #+#             */
-/*   Updated: 2023/04/16 16:51:07 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/16 19:14:16 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,23 +30,66 @@ h_table *create_table(int size)
 	return (new_table);
 }
 
+char	*get_value(const char *s, int c)
+{
+	size_t	i;
+
+	i = 0;
+	if (!s)
+		return (0);
+	while (s[i])
+	{
+		if (s[i] == (char)c)
+			return ((char *)&s[i+1]);
+		i++;
+	}
+	return (NULL);
+}
+
+char	*get_key(const char *s, int c)
+{
+	char	*p;
+	int	i;
+	int	z;
+
+	i = 0;
+	while(s[i] != c)
+		i++;
+	p = (char *) malloc((i+1) * sizeof(char));
+	if (!p)
+		return (NULL);
+	z = 0;
+	while (z < i)
+	{
+		p[z] = s[z];
+		z++;
+	}
+	p[z] = '\0';
+	return (p);
+}
+
 h_item	*create_new_item(char *var)
 {
-	char	**env_values;
 	h_item	*new_item;
+	char	*value;
+	char	*key;
 
-	env_values = ft_split(var, '=');   
 	new_item = (h_item *)ft_calloc(sizeof(h_item), 1);
 	if (!new_item)
 		msh_error(2);
-	new_item->key = ft_strdup(env_values[0]);
-	if (env_values[1])
-		new_item->value = ft_strdup(env_values[1]);
-	else
-		new_item->value = NULL;
-    new_item->next = NULL;
-	free(env_values);
-	return (new_item);
+	key = get_key(var, '=');
+	if (key)
+	{
+		new_item->key = key;
+		value = get_value(var, '=');
+		if (value)
+			new_item->value = ft_strdup(value);
+		else
+			new_item->value = NULL;
+		new_item->next = NULL;
+		return (new_item);
+	}
+	return (NULL);
 }
 
 int	hash_function(char *key, int size)
@@ -102,7 +145,6 @@ void	add_h_item(char *var, h_table *table)
 		msh_error(3);
 	new_item = create_new_item(var);
 	hash_index = hash_function(new_item->key, table->size);
-	
 	current = table->bucket_items[hash_index];
 	if (!current)
 	{

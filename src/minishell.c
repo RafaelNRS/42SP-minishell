@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/16 16:53:36 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/16 19:32:40 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,10 @@ void minishell_loop(void)
 {
 	char *cmd_line;
 	char **tokens;
+	h_table	*table;
 
+	table = alloc_hash_table(__environ);
+	
 	while (true)
 	{
 		signal(SIGQUIT, SIG_IGN);
@@ -47,30 +50,21 @@ void minishell_loop(void)
 			continue;
 		}
 		tokens = ft_tokenize(cmd_line, ' ');
+		execute(tokens, table);
 		free(tokens);
 		if (cmd_line)
 			free(cmd_line);
 	}
+	free_hash_table(table);
 }
 
 int main(int argc, char **argv)
 {
-	h_table *table;
-
 	if (argc > 1 && argv)
 		msh_error(2);
 	//TODO: Load config files
-	// minishell_loop();
+	minishell_loop();
 
 	//TODO: Perform cleanup
-	// return 0;
-
-	table = alloc_hash_table(__environ);
-	// printf("found - %s", ht_search(table, "TERM_PROGRAM"));
-	add_h_item("test=a", table); // dif from "test='a'"
-	add_h_item("PWD=a", table);
-	delete_item(table, "PWD");
-	print_table(table);
-	free_hash_table(table);
 	return 0;
 }

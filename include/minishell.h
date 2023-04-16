@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/16 16:52:18 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/16 19:35:31 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 # include <signal.h>
 # include <stdbool.h>
 
-// pq 1024 e 64?
 # define MSH_LINE_BUFFER_SIZE 1024
 # define MSH_TOKEN_BUFFER_SIZE 64
 # define MSH_TOKEN_DELIMITER " \t\r\n\a"
@@ -54,4 +53,5 @@ void	free_hash_table(h_table *table);
 
 char **ft_tokenize(char const *cmd_line, char separator);
 
+void execute(char	**cmd, h_table *hash_table);
 #endif
