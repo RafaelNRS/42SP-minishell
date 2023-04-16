@@ -33,6 +33,15 @@ void env(h_table *table)
     print_table(table);
 }
 
+void pwd(h_table *table)
+{
+    char *value;
+
+    value = ht_search(table, "PWD");
+    write(1, value, ft_strlen(value));
+    write(1, "\n", 1);
+}
+
 void built_in(char **cmd, h_table *table)
 {
     if (ft_strncmp(cmd[0], "export\0", 7) == 0)
@@ -41,6 +50,8 @@ void built_in(char **cmd, h_table *table)
         unset(cmd[1], table);
     if (ft_strncmp(cmd[0], "env\0", 4) == 0)
         env(table);
+    if (ft_strncmp(cmd[0], "pwd\0", 4) == 0)
+        pwd(table);
 }
 
 void execute(char	**cmd, h_table *table)
