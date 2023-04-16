@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/09 21:17:03 by mariana           #+#    #+#             */
-/*   Updated: 2023/04/16 19:14:16 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/16 20:01:24 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -248,7 +248,11 @@ char *ht_search(h_table *table, char *key)
 			current = current->next;
 	}
 	if (!current)
-		printf("command not found %s\n", key); // deveria fazer um exit
+	{
+		write(2, "command not found ", 18);
+		write(2, key, ft_strlen(key));
+		write(2, "\n", 1);
+	}
 	return NULL;
 }
 
@@ -265,7 +269,10 @@ void print_table(h_table *hash_env)
 		current = hash_env->bucket_items[j];
 		while (current)
 		{
-            printf("Key %d: %s, Value:%s\n", j, current->key, current-> value);
+			write(1, current->key, ft_strlen(current->key));
+			write(1, "=", 1);
+			write(1, current-> value, ft_strlen(current-> value));
+			write(1, "\n", 1);
 			i++;
 			if(current->next)
 				current = current->next;
