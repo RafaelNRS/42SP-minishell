@@ -6,21 +6,21 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/23 13:07:58 by mariana           #+#    #+#             */
-/*   Updated: 2023/04/23 13:25:40 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/23 13:46:36 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-h_table	*create_table(int size)
+t_table	*create_table(int size)
 {
-	h_table	*new_table;
+	t_table	*new_table;
 	int		i;
 
-	new_table = (h_table *)ft_calloc(sizeof(h_table), 1);
+	new_table = (t_table *)ft_calloc(sizeof(t_table), 1);
 	new_table->size = size;
 	new_table->count = 0;
-	new_table->bucket_items = (h_item **)ft_calloc(sizeof(h_table), size);
+	new_table->bucket_items = (t_item **)ft_calloc(sizeof(t_table), size);
 	i = 0;
 	while (i < size)
 	{

@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/23 08:41:55 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/23 13:48:46 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void	minishell_loop(void)
 {
 	char	*cmd_line;
 	char	**tokens;
-	h_table	*table;
+	t_table	*table;
 
 	table = alloc_hash_table(__environ);
 	while (true)

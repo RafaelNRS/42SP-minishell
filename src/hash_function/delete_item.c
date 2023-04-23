@@ -6,15 +6,15 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/23 13:23:37 by mariana           #+#    #+#             */
-/*   Updated: 2023/04/23 13:41:47 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/23 13:46:36 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	find_and_delete(h_item	*current, char *key, h_table *table)
+void	find_and_delete(t_item	*current, char *key, t_table *table)
 {
-	h_item	*tmp_item;
+	t_item	*tmp_item;
 
 	while (current->next)
 	{
@@ -30,10 +30,10 @@ void	find_and_delete(h_item	*current, char *key, h_table *table)
 	}
 }
 
-void	delete_item(h_table *table, char *key)
+void	delete_item(t_table *table, char *key)
 {
 	int		index;
-	h_item	*current;
+	t_item	*current;
 
 	index = hash_function(key, table->size);
 	current = table->bucket_items[index];

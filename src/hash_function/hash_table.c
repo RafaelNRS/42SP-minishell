@@ -6,17 +6,17 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/09 21:17:03 by mariana           #+#    #+#             */
-/*   Updated: 2023/04/23 13:24:35 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/23 13:51:05 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-h_table	*alloc_hash_table(char **env)
+t_table	*alloc_hash_table(char **env)
 {
 	int		i;
 	int		size;
-	h_table	*table;
+	t_table	*table;
 
 	size = 0;
 	while (env[size])
@@ -25,16 +25,16 @@ h_table	*alloc_hash_table(char **env)
 	i = 0;
 	while (env[i])
 	{
-		add_h_item(env[i], table);
+		add_t_item(env[i], table);
 		i++;
 	}
 	return (table);
 }
 
-char	*ht_search(h_table *table, char *key)
+char	*ht_search(t_table *table, char *key)
 {
 	int		index;
-	h_item	*current;
+	t_item	*current;
 
 	index = hash_function(key, table->size);
 	current = table->bucket_items[index];
@@ -54,11 +54,11 @@ char	*ht_search(h_table *table, char *key)
 	return (NULL);
 }
 
-void	print_table(h_table *hash_env)
+void	print_table(t_table *hash_env)
 {
 	int		i;
 	int		j;
-	h_item	*current;
+	t_item	*current;
 
 	i = 0;
 	j = 0;

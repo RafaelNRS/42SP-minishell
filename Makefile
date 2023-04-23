@@ -13,7 +13,10 @@ HEADER_PATH		= ./include/minishell.h
 
 SRC_DIR			= ./src/
 SRC_CLIENT		= minishell.c
-SRC_CLIENT_PATH	= ./src/minishell.c ./src/tokenizer.c ./src/hash_files.c ./src/msh_error.c ./src/execute.c
+SRC_CLIENT_PATH	= ./src/minishell.c ./src/tokenizer.c \
+									./src/hash_function/add_item.c ./src/hash_function/delete_item.c ./src/hash_function/free_table.c \
+									./src/hash_function/hash_functions.c ./src/hash_function/hash_table.c \
+									./src/msh_error.c ./src/execute.c
 
 BIN						= ./bin/
 BINARY_OUT_PROJ		= ./bin/minishell

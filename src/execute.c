@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 16:57:01 by mariana           #+#    #+#             */
-/*   Updated: 2023/04/23 08:47:29 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/23 13:48:36 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,23 +18,23 @@
 // D='a"c'"1" == a"c1
 //  E='a"c"'1  == a"c"1
 
-void	export(char *var, h_table *table)
+void	export(char *var, t_table *table)
 {
 	if (ft_strchr(var, '='))
-		add_h_item(var, table);
+		add_t_item(var, table);
 }
 
-void	unset(char *var, h_table *table)
+void	unset(char *var, t_table *table)
 {
 	delete_item(table, var);
 }
 
-void	env(h_table *table)
+void	env(t_table *table)
 {
 	print_table(table);
 }
 
-void	pwd(h_table *table)
+void	pwd(t_table *table)
 {
 	char	*value;
 
@@ -69,7 +69,7 @@ void	pwd(h_table *table)
 //         write(2, "\n", 1);
 // }
 
-void	ft_exit(char **cmd, h_table *table, char *cmd_line)
+void	ft_exit(char **cmd, t_table *table, char *cmd_line)
 {
 	free(cmd);
 	free_hash_table(table);
@@ -78,7 +78,7 @@ void	ft_exit(char **cmd, h_table *table, char *cmd_line)
 	exit(1);
 }
 
-void	built_in(char **cmd, h_table *table, char *cmd_line)
+void	built_in(char **cmd, t_table *table, char *cmd_line)
 {
 	if (ft_strncmp(cmd[0], "export\0", 7) == 0)
 		export(cmd[1], table);
@@ -94,7 +94,7 @@ void	built_in(char **cmd, h_table *table, char *cmd_line)
 	//     echo(cmd);
 }
 
-void	execute(char **cmd, h_table *table, char *cmd_line)
+void	execute(char **cmd, t_table *table, char *cmd_line)
 {
 	built_in(cmd, table, cmd_line);
 }

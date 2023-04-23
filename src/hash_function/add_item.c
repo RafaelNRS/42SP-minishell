@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/23 13:24:41 by mariana           #+#    #+#             */
-/*   Updated: 2023/04/23 13:39:05 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/23 13:55:38 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,13 +50,13 @@ char	*get_key(const char *s, int c)
 	return (p);
 }
 
-h_item	*create_new_item(char *var)
+t_item	*create_new_item(char *var)
 {
-	h_item	*new_item;
+	t_item	*new_item;
 	char	*value;
 	char	*key;
 
-	new_item = (h_item *)ft_calloc(sizeof(h_item), 1);
+	new_item = (t_item *)ft_calloc(sizeof(t_item), 1);
 	if (!new_item)
 		msh_error(2);
 	key = get_key(var, '=');
@@ -74,7 +74,7 @@ h_item	*create_new_item(char *var)
 	return (NULL);
 }
 
-void	chage_item(h_item *current, h_item *new_item, h_table *table)
+void	change_item(t_item *current, t_item *new_item, t_table *table)
 {
 	int		len;
 
@@ -103,10 +103,10 @@ void	chage_item(h_item *current, h_item *new_item, h_table *table)
 }
 
 // unsigned long int
-void	add_h_item(char *var, h_table *table)
+void	add_t_item(char *var, t_table *table)
 {
-	h_item	*new_item;
-	h_item	*current;
+	t_item	*new_item;
+	t_item	*current;
 	int		hash_index;
 
 	if (table->count == table->size)
@@ -120,5 +120,5 @@ void	add_h_item(char *var, h_table *table)
 		table->count++;
 	}
 	else
-		chage_item(current, new_item, table);
+		change_item(current, new_item, table);
 }
