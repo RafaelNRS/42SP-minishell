@@ -6,16 +6,16 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/09 21:17:03 by mariana           #+#    #+#             */
-/*   Updated: 2023/04/16 20:25:55 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/16 21:10:51 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-h_table *create_table(int size)
+h_table	*create_table(int size)
 {
 	h_table	*new_table;
-	int	i;
+	int		i;
 
 	new_table = (h_table *)ft_calloc(sizeof(h_table), 1);
 	new_table->size = size;
@@ -40,7 +40,7 @@ char	*get_value(const char *s, int c)
 	while (s[i])
 	{
 		if (s[i] == (char)c)
-			return ((char *)&s[i+1]);
+			return ((char *)&s[i + 1]);
 		i++;
 	}
 	return (NULL);
@@ -49,13 +49,13 @@ char	*get_value(const char *s, int c)
 char	*get_key(const char *s, int c)
 {
 	char	*p;
-	int	i;
-	int	z;
+	int		i;
+	int		z;
 
 	i = 0;
-	while(s[i] != c)
+	while (s[i] != c)
 		i++;
-	p = (char *) malloc((i+1) * sizeof(char));
+	p = (char *) malloc((i + 1) * sizeof(char));
 	if (!p)
 		return (NULL);
 	z = 0;
@@ -95,17 +95,16 @@ h_item	*create_new_item(char *var)
 int	hash_function(char *key, int size)
 {
 	int	i;
-	int j;
+	int	j;
 
 	i = 0;
 	j = 0;
 	while (key[j++])
 		i += key[j];
-
-    return i % size;
+	return (i % size);
 }
 
-void free_item(h_item *item)
+void	free_item(h_item *item)
 {
 	free(item->key);
 	free(item->value);
@@ -134,12 +133,12 @@ void	free_hash_table(h_table *table)
 	free(table);
 }
 
+// unsigned long int
 void	add_h_item(char *var, h_table *table)
 {
 	h_item	*new_item;
 	h_item	*current;
-	int 	hash_index;
-	// unsigned long int
+	int		hash_index;
 
 	if (table->count == table->size)
 		msh_error(3);
@@ -153,14 +152,14 @@ void	add_h_item(char *var, h_table *table)
 	}
 	else
 	{
-		while(current)
+		while (current)
 		{
 			if (ft_strncmp(current->key, new_item->key, ft_strlen(new_item->key) + 1) == 0)
 			{
 				free(current->value);
 				current->value = ft_strdup(new_item->value);
 				free_item(new_item);
-				return;
+				return ;
 			}
 			else
 			{
@@ -170,18 +169,18 @@ void	add_h_item(char *var, h_table *table)
 				{
 					current->next = new_item;
 					table->count++;
-					break;
+					break ;
 				}
 			}
 		}
 	}
 }
 
-h_table *alloc_hash_table(char **env)
+h_table	*alloc_hash_table(char **env)
 {
-	int i;
-	int size;
-	h_table *table;
+	int		i;
+	int		size;
+	h_table	*table;
 
 	size = 0;
 	while (env[size])
@@ -196,16 +195,16 @@ h_table *alloc_hash_table(char **env)
 	return (table);
 }
 
-void delete_item(h_table *table, char *key)
+void	delete_item(h_table *table, char *key)
 {
-	int index;
-	h_item *current;
-	h_item *tmp_item;
+	int		index;
+	h_item	*current;
+	h_item	*tmp_item;
 
 	index = hash_function(key, table->size);
 	current = table->bucket_items[index];
 	if (!current)
-		return;
+		return ;
 	if (ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
 	{
 		if (current->next)
@@ -214,11 +213,11 @@ void delete_item(h_table *table, char *key)
 			table->bucket_items[index] = NULL;
 		free_item(current);
 		table->count--;
-		return;
+		return ;
 	}
 	else
 	{
-		while(current->next)
+		while (current->next)
 		{
 			if (ft_strncmp(current->next->key, key, ft_strlen(key) + 1) == 0)
 			{
@@ -226,24 +225,24 @@ void delete_item(h_table *table, char *key)
 				current->next = current->next->next;
 				free_item(tmp_item);
 				table->count--;
-				return;
+				return ;
 			}
 			current = current->next;
 		}
 	}
 }
 
-char *ht_search(h_table *table, char *key)
+char	*ht_search(h_table *table, char *key)
 {
-	int index;
-	h_item *current;
+	int		index;
+	h_item	*current;
 
 	index = hash_function(key, table->size);
 	current = table->bucket_items[index];
 	while (current)
 	{
 		if (ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
-			return current->value;
+			return (current->value);
 		else
 			current = current->next;
 	}
@@ -253,18 +252,18 @@ char *ht_search(h_table *table, char *key)
 		write(2, key, ft_strlen(key));
 		write(2, "\n", 1);
 	}
-	return NULL;
+	return (NULL);
 }
 
-void print_table(h_table *hash_env)
+void	print_table(h_table *hash_env)
 {
-	int i;
-	int j;
-	h_item *current;
+	int		i;
+	int		j;
+	h_item	*current;
 
 	i = 0;
-	j= 0;
-	while(i < hash_env->count)
+	j = 0;
+	while (i < hash_env->count)
 	{
 		current = hash_env->bucket_items[j];
 		while (current)
@@ -274,12 +273,11 @@ void print_table(h_table *hash_env)
 			write(2, current-> value, ft_strlen(current-> value));
 			write(2, "\n", 1);
 			i++;
-			if(current->next)
+			if (current->next)
 				current = current->next;
 			else
-				break;
+				break ;
 		}
 		j++;
 	}
 }
-

@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/08 11:06:21 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/16 19:32:08 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/16 21:02:47 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ static char	**ft_fill_str(char const *s, char c, char **str_arr, int i[3])
 	return (str_arr);
 }
 
-char **ft_tokenize(char const *cmd_line, char separator)
+char	**ft_tokenize(char const *cmd_line, char separator)
 {
 	char	**words;
 	int		word_count;
