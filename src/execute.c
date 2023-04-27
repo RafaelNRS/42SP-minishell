@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 16:57:01 by mariana           #+#    #+#             */
-/*   Updated: 2023/04/16 19:36:42 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/27 08:15:14 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void export(char *var, h_table *table)
+void export(char *var)
 {
     // falta implementar
     // test="a" = a
@@ -20,30 +20,30 @@ void export(char *var, h_table *table)
     // D='a"c'"1" == a"c1
     //  E='a"c"'1  == a"c"1
     if (ft_strchr(var, '='))
-        add_h_item(var, table);
+        add_h_item(var, g_msh.env);
 }
 
-void unset(char *var, h_table *table)
+void unset(char *var)
 {
-    delete_item(table, var);
+    delete_item(g_msh.env, var);
 }
 
-void env(h_table *table)
+void env()
 {
-    print_table(table);
+    print_table(g_msh.env);
 }
 
-void built_in(char **cmd, h_table *table)
+void built_in(char **cmd)
 {
     if (ft_strncmp(cmd[0], "export\0", 7) == 0)
-        export(cmd[1], table);
+        export(cmd[1]);
     if (ft_strncmp(cmd[0], "unset\0", 6) == 0)
-        unset(cmd[1], table);
+        unset(cmd[1]);
     if (ft_strncmp(cmd[0], "env\0", 4) == 0)
-        env(table);
+        env();
 }
 
-void execute(char	**cmd, h_table *table)
+void execute(char	**cmd)
 {
-    built_in(cmd, table);
+    built_in(cmd);
 }

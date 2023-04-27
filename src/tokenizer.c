@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/08 11:06:21 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/16 19:32:08 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/27 08:29:46 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,5 +85,6 @@ char **ft_tokenize(char const *cmd_line, char separator)
 	i[0] = 0;
 	i[1] = 0;
 	words = ft_fill_str(cmd_line, separator, words, i);
+	words[word_count] = NULL;
 	return (words);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/16 19:35:31 by mariana          ###   ########.fr       */
+/*   Updated: 2023/04/27 09:01:31 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <libft.h>
 # include <readline/readline.h>
+# include <readline/history.h>
 # include <signal.h>
 # include <stdbool.h>
 
@@ -22,6 +23,7 @@
 # define MSH_TOKEN_BUFFER_SIZE 64
 # define MSH_TOKEN_DELIMITER " \t\r\n\a"
 # define ENV_MAX_SIZE 2
+# define TABLE_DEFAULT_SIZE 50
 
 typedef struct h_item
 {
@@ -36,6 +38,15 @@ typedef struct h_table
 	int		size;
 	int		count;
 }	h_table;
+
+typedef	struct h_msh
+{
+	h_table	*env;
+	h_table *local;
+	int		error_code;
+}	t_msh;
+
+extern t_msh	g_msh;
 
 void msh_error(int error_code);
 
@@ -53,5 +64,5 @@ void	free_hash_table(h_table *table);
 
 char **ft_tokenize(char const *cmd_line, char separator);
 
-void execute(char	**cmd, h_table *hash_table);
+void execute(char	**cmd);
 #endif
