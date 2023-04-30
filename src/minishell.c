@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/27 09:04:58 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/04/28 13:38:53 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static void	read_cmd_line(char **cmd_line)
 void minishell_loop(void)
 {
 	char *cmd_line;
-	char **tokens;
+	TokenList *tokens;
 	
 	while (true)
 	{
@@ -49,11 +49,18 @@ void minishell_loop(void)
 			continue;
 		}
 		add_history(cmd_line);
-		tokens = ft_tokenize(cmd_line, ' ');
+		tokens = ft_tokenize(cmd_line);
 		if (!tokens)
-			return ("");
-		execute(tokens);
-		free(tokens);
+			return ;
+		for (int i = 0; i < tokens->count; i++) {
+        	char *token_without_quotes = remove_outer_quotes(tokens->tokens[i]);
+        	printf("Token %d: %s\n", i, token_without_quotes);
+    	}
+
+    	free_token_list(tokens);
+		//expand(tokens);
+		//execute(tokens);
+		//free(tokens);
 		if (cmd_line)
 			free(cmd_line);
 	}
