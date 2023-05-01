@@ -6,13 +6,15 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/23 13:48:46 by mariana          ###   ########.fr       */
+/*   Updated: 2023/05/01 10:16:01 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	sig_handler(int signal)
+t_msh	g_msh;
+
+static void sig_handler(int signal)
 {
 	if (signal == SIGINT)
 	{
@@ -27,17 +29,15 @@ static void	read_cmd_line(char **cmd_line)
 {
 	char	*buffer;
 
-	buffer = "\033[1;96mminishell>";
+	buffer = "\033[1;96mguest@minishell $ \033[0m";
 	*cmd_line = readline(buffer);
 }
 
 void	minishell_loop(void)
 {
-	char	*cmd_line;
-	char	**tokens;
-	t_table	*table;
+	char		*cmd_line;
+	TokenList	*tokens;
 
-	table = alloc_hash_table(__environ);
 	while (true)
 	{
 		signal(SIGQUIT, SIG_IGN);
@@ -48,20 +48,31 @@ void	minishell_loop(void)
 			free(cmd_line);
 			continue ;
 		}
-		tokens = ft_tokenize(cmd_line, ' ');
-		execute(tokens, table, cmd_line);
+		add_history(cmd_line);
+		tokens = ft_init_tokenize(cmd_line);
+		if (!tokens)
+			return ;
+		for (int i = 0; i < tokens->count; i++) {
+        	char *token_without_quotes = remove_outer_quotes(tokens->tokens[i]);
+        	printf("Token %d: %s\n", i, token_without_quotes);
+    	}
+
+    	free_token_list(tokens);
+		//expand(tokens);
+		execute(tokens, cmd_line);
 		free(tokens);
 		if (cmd_line)
 			free(cmd_line);
 	}
-	free_hash_table(table);
 }
 
 int	main(int argc, char **argv)
 {
 	if (argc > 1 && argv)
 		msh_error(2);
-	//TODO: Load config files
+	g_msh.env = alloc_hash_table(__environ);
+	g_msh.local = create_table(TABLE_DEFAULT_SIZE);
+	g_msh.error_code = 0;	
 	minishell_loop();
 	//TODO: Perform cleanup
 	return (0);

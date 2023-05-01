@@ -5,85 +5,148 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/04/08 11:06:21 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/16 21:02:47 by mariana          ###   ########.fr       */
+/*   Created: 2023/05/01 08:51:20 by ranascim          #+#    #+#             */
+/*   Updated: 2023/05/01 10:14:19 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static size_t	ft_word_count(const char *s, char c, int i[3])
+bool	is_delimiter(char c)
 {
-	int	quotes[2];
+	return (c == ' ' || c == '\t' || c == '\n');
+}
 
-	quotes[0] = 0;
-	quotes[1] = 0;
-	while (s[i[0]])
+bool	is_quote(char c)
+{
+	return (c == '\'' || c == '\"');
+}
+
+bool	check_s_quote(char *input, bool quotes[2])
+{
+	if (*input == '\'' && !quotes[1])
+		return (!quotes[0]);
+	else
+		return (quotes[0]);
+}
+
+bool	check_d_quote(char *input, bool quotes[2])
+{
+	if (*input == '\"' && !quotes[0])
+		return (!quotes[1]);
+	else
+		return (quotes[1]);
+}
+
+char	*remove_outer_quotes(char *token)
+{
+	int	len;
+
+	len = strlen(token);
+	if (len >= 2 && is_quote(token[0]) && token[0] == token[len - 1])
 	{
-		if (s[i[0]] != c)
+		memmove(token, token + 1, len - 2);
+		token[len - 2] = '\0';
+	}
+	return (token);
+}
+
+void	free_token_list(TokenList *list)
+{
+	int	i;
+
+	i = 0;
+	while (i < list->count)
+	{
+		free(list->tokens[i]);
+		i++;
+	}
+	free(list->tokens);
+	free(list);
+}
+
+void	copy_variable_value(char *var_name, char **out_ptr)
+{
+	char	*var_value;
+
+	var_value = getenv(var_name);
+	if (var_value)
+	{
+		ft_strlcpy(*out_ptr, var_value, ft_strlen(var_value) + 1);
+		*out_ptr += ft_strlen(var_value);
+	}
+}
+
+void	handle_var_exp(const char **in_ptr, char *var, char **out, bool s_quote)
+{
+	char	*var_name_ptr;
+
+	if (**in_ptr == '$' && !s_quote && ft_isalnum(*(*in_ptr + 1)))
+	{
+		(*in_ptr)++;
+		var_name_ptr = var;
+		while (**in_ptr && (!is_quote(**in_ptr) && !is_delimiter(**in_ptr)))
+			*var_name_ptr++ = *(*in_ptr)++;
+		*var_name_ptr = '\0';
+		copy_variable_value(var, out);
+	}
+	else
+		*(*out)++ = *(*in_ptr)++;
+}
+
+char	*expand_variables(const char *in_ptr, bool is_single_quote)
+{
+	char	*output;
+	char	*out_ptr;
+	char	var_name[256];
+
+	output = malloc(4096);
+	out_ptr = output;
+	is_single_quote = (in_ptr[0] == '\'');
+	while (*in_ptr)
+		handle_var_exp(&in_ptr, var_name, &out_ptr, is_single_quote);
+	*out_ptr = '\0';
+	return (output);
+}
+
+TokenList	*ft_tokenize(char *p, TokenList *list, bool quotes[2], char *t_st)
+{
+	list = malloc(sizeof(TokenList));
+	list->tokens = malloc(sizeof(char *) * MAX_TOKENS);
+	list->count = 0;
+	while (*p)
+	{
+		quotes[0] = check_s_quote(p, quotes);
+		quotes[1] = check_d_quote(p, quotes);
+		if (is_delimiter(*p) && !quotes[0] && !quotes[1])
 		{
-			i[1]++;
-			while ((s[i[0]] != c || quotes[0] == 1) && s[i[0]] != '\0')
+			if (t_st)
 			{
-				if (!quotes[1] && (s[i[0]] == '\"' || s[i[0]] == '\''))
-					quotes[1] = s[i[0]];
-				quotes[0] = (quotes[0] + (s[i[0]] == quotes[1])) % 2;
-				quotes[1] *= quotes[0] != 0;
-				i[0]++;
+				*p = '\0';
+				if (list->count < MAX_TOKENS)
+					list->tokens[list->count++] = expand_variables(t_st, false);
+				t_st = NULL;
 			}
-			if (quotes[0])
-				return (-1);
 		}
-		else
-			i[0]++;
+		else if (!t_st)
+			t_st = p;
+		p++;
 	}
-	return (i[1]);
+	if (t_st && list->count < MAX_TOKENS)
+		list->tokens[list->count++] = expand_variables(t_st, false);
+	return (list);
 }
 
-static char	**ft_fill_str(char const *s, char c, char **str_arr, int i[3])
+TokenList	*ft_init_tokenize(char *input)
 {
-	int	s_len;
-	int	quotes[2];
+	TokenList	*list;
+	bool		quotes[2];
+	char		*token_start;
 
-	quotes[0] = 0;
-	quotes[1] = 0;
-	s_len = ft_strlen(s);
-	while (s[i[0]])
-	{
-		while (s[i[0]] == c && s[i[0]] != '\0')
-			i[0]++;
-		i[1] = i[0];
-		while ((s[i[0]] != c || quotes[0] || quotes[1]) && s[i[0]])
-		{
-			quotes[0] = (quotes[0] + (!quotes[1] && s[i[0]] == '\'')) % 2;
-			quotes[1] = (quotes[1] + (!quotes[0] && s[i[0]] == '\"')) % 2;
-			i[0]++;
-		}
-		if (i[1] >= s_len)
-			str_arr[i[2]++] = "\0";
-		else
-			str_arr[i[2]++] = ft_substr(s, i[1], i[0] - i[1]);
-	}
-	return (str_arr);
-}
-
-char	**ft_tokenize(char const *cmd_line, char separator)
-{
-	char	**words;
-	int		word_count;
-	int		i[3];
-
-	i[0] = 0;
-	i[1] = 0;
-	i[2] = 0;
-	word_count = ft_word_count(cmd_line, separator, i);
-	if (word_count < 1)
-		return (NULL);
-	words = malloc((word_count + 1) * sizeof(char *));
-	if (words == NULL)
-		return (NULL);
-	i[0] = 0;
-	i[1] = 0;
-	words = ft_fill_str(cmd_line, separator, words, i);
-	return (words);
+	token_start = NULL;
+	list = NULL;
+	quotes[0] = false;
+	quotes[1] = false;
+	list = ft_tokenize(input, list, quotes, token_start);
+	return (list);
 }
