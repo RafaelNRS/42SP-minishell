@@ -1,42 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free_table.c                                       :+:      :+:    :+:   */
+/*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/04/23 13:15:28 by mariana           #+#    #+#             */
-/*   Updated: 2023/05/01 13:03:36 by mariana          ###   ########.fr       */
+/*   Created: 2023/04/23 14:01:54 by mariana           #+#    #+#             */
+/*   Updated: 2023/05/01 12:29:00 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	free_item(t_item *item)
+void	export(TokenList *var)
 {
-	free(item->key);
-	free(item->value);
-	free(item);
-}
+	int	i;
 
-void	free_hash_table(void)
-{
-	int		i;
-	t_item	*current;
-	t_item	*temp;
-
-	i = 0;
-	while (i < g_msh.env->size)
+	i = 1;
+	if (var->count == 2)
 	{
-		current = g_msh.env->bucket_items[i];
-		while (current != NULL)
-		{
-			temp = current->next;
-			free_item(current);
-			current = temp;
-		}
-		i++;
+		if (ft_strchr(var->tokens[i], '='))
+			add_t_item(var->tokens[i]);
 	}
-	free(g_msh.env->bucket_items);
-	free(g_msh.env);
+	else
+	{
+		while (i <= var->count)
+		{
+			if (ft_strchr(var->tokens[i], '='))
+				add_t_item(var->tokens[i]);
+			i++;
+		}
+	}
 }

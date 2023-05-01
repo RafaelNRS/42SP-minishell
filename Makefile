@@ -16,6 +16,8 @@ SRC_CLIENT		= minishell.c
 SRC_CLIENT_PATH	= ./src/minishell.c ./src/tokenizer.c \
 									./src/hash_function/add_item.c ./src/hash_function/delete_item.c ./src/hash_function/free_table.c \
 									./src/hash_function/hash_functions.c ./src/hash_function/hash_table.c \
+									./src/builtin/args_count.c ./src/builtin/env.c ./src/builtin/exit_minishell.c \
+									./src/builtin/unset.c ./src/builtin/export.c ./src/builtin/pwd.c ./src/builtin/cd.c \
 									./src/msh_error.c ./src/execute.c
 
 BIN						= ./bin/

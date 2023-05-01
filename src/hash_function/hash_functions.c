@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/23 13:07:58 by mariana           #+#    #+#             */
-/*   Updated: 2023/04/23 13:46:36 by mariana          ###   ########.fr       */
+/*   Updated: 2023/05/01 11:18:47 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ t_table	*create_table(int size)
 	return (new_table);
 }
 
-int	hash_function(char *key, int size)
+int	hash_function(char *key)
 {
 	int	i;
 	int	j;
@@ -39,5 +39,5 @@ int	hash_function(char *key, int size)
 	j = 0;
 	while (key[j++])
 		i += key[j];
-	return (i % size);
+	return (i % g_msh.env->size);
 }

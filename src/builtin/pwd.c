@@ -1,42 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free_table.c                                       :+:      :+:    :+:   */
+/*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/04/23 13:15:28 by mariana           #+#    #+#             */
-/*   Updated: 2023/05/01 13:03:36 by mariana          ###   ########.fr       */
+/*   Created: 2023/04/23 14:03:45 by mariana           #+#    #+#             */
+/*   Updated: 2023/05/01 12:39:15 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	free_item(t_item *item)
+void	pwd(TokenList *cmd)
 {
-	free(item->key);
-	free(item->value);
-	free(item);
-}
-
-void	free_hash_table(void)
-{
-	int		i;
-	t_item	*current;
-	t_item	*temp;
-
-	i = 0;
-	while (i < g_msh.env->size)
-	{
-		current = g_msh.env->bucket_items[i];
-		while (current != NULL)
-		{
-			temp = current->next;
-			free_item(current);
-			current = temp;
-		}
-		i++;
-	}
-	free(g_msh.env->bucket_items);
-	free(g_msh.env);
+	if (cmd->count > 1)
+		ft_printf("pwd: too many arguments\n");
+	else
+		ft_printf("%s\n", ht_search("PWD"));
 }

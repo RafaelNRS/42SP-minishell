@@ -6,38 +6,36 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/09 21:17:03 by mariana           #+#    #+#             */
-/*   Updated: 2023/04/23 13:51:05 by mariana          ###   ########.fr       */
+/*   Updated: 2023/05/01 13:03:18 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_table	*alloc_hash_table(char **env)
+void	alloc_hash_table(char **env)
 {
 	int		i;
 	int		size;
-	t_table	*table;
 
 	size = 0;
 	while (env[size])
 		size++;
-	table = create_table(size * 2);
+	g_msh.env = create_table(size * 2);
 	i = 0;
 	while (env[i])
 	{
-		add_t_item(env[i], table);
+		add_t_item(env[i]);
 		i++;
 	}
-	return (table);
 }
 
-char	*ht_search(t_table *table, char *key)
+char	*ht_search(char *key)
 {
 	int		index;
 	t_item	*current;
 
-	index = hash_function(key, table->size);
-	current = table->bucket_items[index];
+	index = hash_function(key);
+	current = g_msh.env->bucket_items[index];
 	while (current)
 	{
 		if (ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
@@ -46,15 +44,11 @@ char	*ht_search(t_table *table, char *key)
 			current = current->next;
 	}
 	if (!current)
-	{
-		write(2, "command not found ", 18);
-		write(2, key, ft_strlen(key));
-		write(2, "\n", 1);
-	}
+		ft_printf("command not found %s\n", key);
 	return (NULL);
 }
 
-void	print_table(t_table *hash_env)
+void	print_table(void)
 {
 	int		i;
 	int		j;
@@ -62,15 +56,12 @@ void	print_table(t_table *hash_env)
 
 	i = 0;
 	j = 0;
-	while (i < hash_env->count)
+	while (i < g_msh.env->count)
 	{
-		current = hash_env->bucket_items[j];
+		current = g_msh.env->bucket_items[j];
 		while (current)
 		{
-			write(2, current->key, ft_strlen(current->key));
-			write(2, "=", 1);
-			write(2, current-> value, ft_strlen(current-> value));
-			write(2, "\n", 1);
+			ft_printf("%s=%s\n", current->key, current-> value);
 			i++;
 			if (current->next)
 				current = current->next;

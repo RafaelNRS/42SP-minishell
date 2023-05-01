@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/05/01 10:16:01 by mariana          ###   ########.fr       */
+/*   Updated: 2023/05/01 13:02:26 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 t_msh	g_msh;
 
-static void sig_handler(int signal)
+static void	sig_handler(int signal)
 {
 	if (signal == SIGINT)
 	{
@@ -56,13 +56,13 @@ void	minishell_loop(void)
         	char *token_without_quotes = remove_outer_quotes(tokens->tokens[i]);
         	printf("Token %d: %s\n", i, token_without_quotes);
     	}
-
-    	free_token_list(tokens);
-		//expand(tokens);
 		execute(tokens, cmd_line);
-		free(tokens);
-		if (cmd_line)
-			free(cmd_line);
+
+    	// free_token_list(tokens);
+		//expand(tokens);
+		// free(tokens);
+		// if (cmd_line)
+		// 	free(cmd_line);
 	}
 }
 
@@ -70,9 +70,8 @@ int	main(int argc, char **argv)
 {
 	if (argc > 1 && argv)
 		msh_error(2);
-	g_msh.env = alloc_hash_table(__environ);
-	g_msh.local = create_table(TABLE_DEFAULT_SIZE);
-	g_msh.error_code = 0;	
+	alloc_hash_table(__environ);
+	g_msh.error_code = 0;
 	minishell_loop();
 	//TODO: Perform cleanup
 	return (0);

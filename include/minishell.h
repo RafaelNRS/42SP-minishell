@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/05/01 10:15:39 by mariana          ###   ########.fr       */
+/*   Updated: 2023/05/01 13:05:47 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,9 @@
 # include <readline/history.h>
 # include <signal.h>
 # include <stdbool.h>
+# include <sys/types.h>
+# include <dirent.h>
+# include <errno.h>
 
 # define MSH_LINE_BUFFER_SIZE 1024
 # define MSH_TOKEN_BUFFER_SIZE 64
@@ -40,47 +43,55 @@ typedef struct t_table
 	int		count;
 }	t_table;
 
-void	msh_error(int error_code);
-
-typedef	struct h_msh
+typedef struct h_msh
 {
 	t_table	*env;
-	t_table *local;
+	t_table	*local;
 	int		error_code;
 }	t_msh;
 
-typedef struct {
-    char **tokens;
-    int count;
-} TokenList;
+typedef struct TokenList
+{
+	char	**tokens;
+	int		count;
+}	TokenList;
 
 extern t_msh	g_msh;
 
-void	msh_error(int error_code);
+void		msh_error(int error_code);
 
 // hash functions
-t_table	*create_table(int size);
-t_item	*create_new_item(char *var);
-int		hash_function(char *key, int size);
-void	free_item(t_item *item);
-void	add_t_item(char *var, t_table *table);
-t_table	*alloc_hash_table(char **env);
-void	delete_item(t_table *table, char *key);
-char	*ht_search(t_table *table, char *key);
-void	print_table(t_table *hash_env);
-void	free_hash_table(t_table *table);
+void		alloc_hash_table(char **env);
+t_table		*create_table(int size);
+void		add_t_item(char *var);
+int			hash_function(char *key);
+void		free_item(t_item *item);
+void		delete_item(char *key);
+void		print_table(void);
+char		*ht_search(char *key);
+void		free_hash_table(void);
 
-// void	execute(char	**cmd, t_table *table, char *cmd_line);
+// builtin
+void		export(TokenList *var);
+void		unset(TokenList *var);
+void		env(void);
+void		pwd(TokenList *cmd);
+void		exit_minishell(void);
+int			args_count(char **args);
+void		cd(TokenList *cmd);
 
-void execute(char	**cmd, char *cmd_line);
-void expand(char **tokens);
+void		execute(TokenList *cmd, char *cmd_line);
+void		expand(char **tokens);
 
-TokenList *ft_tokenize(char *input, TokenList *list, bool quotes[2], char *token_start);
-TokenList *ft_init_tokenize(char *input);
-char *expand_variables(const char *input, bool is_single_quote);
-void free_token_list(TokenList *list);
-bool is_delimiter(char c);
-bool is_quote(char c);
-char *remove_outer_quotes(char *token);
-
+TokenList	*ft_tokenize(
+				char *input,
+				TokenList *list,
+				bool quotes[2],
+				char *token_start);
+TokenList	*ft_init_tokenize(char *input);
+char		*expand_variables(const char *input, bool is_single_quote);
+void		free_token_list(TokenList *list);
+bool		is_delimiter(char c);
+bool		is_quote(char c);
+char		*remove_outer_quotes(char *token);
 #endif

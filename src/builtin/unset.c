@@ -1,42 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free_table.c                                       :+:      :+:    :+:   */
+/*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/04/23 13:15:28 by mariana           #+#    #+#             */
-/*   Updated: 2023/05/01 13:03:36 by mariana          ###   ########.fr       */
+/*   Created: 2023/04/23 14:02:35 by mariana           #+#    #+#             */
+/*   Updated: 2023/05/01 13:04:12 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	free_item(t_item *item)
+void	unset(TokenList *var)
 {
-	free(item->key);
-	free(item->value);
-	free(item);
-}
+	int	i;
 
-void	free_hash_table(void)
-{
-	int		i;
-	t_item	*current;
-	t_item	*temp;
-
-	i = 0;
-	while (i < g_msh.env->size)
+	i = 1;
+	while (i < var->count)
 	{
-		current = g_msh.env->bucket_items[i];
-		while (current != NULL)
-		{
-			temp = current->next;
-			free_item(current);
-			current = temp;
-		}
+		delete_item(var->tokens[i]);
 		i++;
 	}
-	free(g_msh.env->bucket_items);
-	free(g_msh.env);
 }

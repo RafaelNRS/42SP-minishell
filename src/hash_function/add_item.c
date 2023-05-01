@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/23 13:24:41 by mariana           #+#    #+#             */
-/*   Updated: 2023/04/23 13:55:38 by mariana          ###   ########.fr       */
+/*   Updated: 2023/05/01 11:20:05 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ t_item	*create_new_item(char *var)
 	return (NULL);
 }
 
-void	change_item(t_item *current, t_item *new_item, t_table *table)
+void	change_item(t_item *current, t_item *new_item)
 {
 	int		len;
 
@@ -95,7 +95,7 @@ void	change_item(t_item *current, t_item *new_item, t_table *table)
 			else
 			{
 				current->next = new_item;
-				table->count++;
+				g_msh.env->count++;
 				break ;
 			}
 		}
@@ -103,22 +103,22 @@ void	change_item(t_item *current, t_item *new_item, t_table *table)
 }
 
 // unsigned long int
-void	add_t_item(char *var, t_table *table)
+void	add_t_item(char *var)
 {
 	t_item	*new_item;
 	t_item	*current;
 	int		hash_index;
 
-	if (table->count == table->size)
+	if (g_msh.env->count == g_msh.env->size)
 		msh_error(3);
 	new_item = create_new_item(var);
-	hash_index = hash_function(new_item->key, table->size);
-	current = table->bucket_items[hash_index];
+	hash_index = hash_function(new_item->key);
+	current = g_msh.env->bucket_items[hash_index];
 	if (!current)
 	{
-		table->bucket_items[hash_index] = new_item;
-		table->count++;
+		g_msh.env->bucket_items[hash_index] = new_item;
+		g_msh.env->count++;
 	}
 	else
-		change_item(current, new_item, table);
+		change_item(current, new_item);
 }
