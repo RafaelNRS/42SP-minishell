@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/05/01 14:09:13 by mariana          ###   ########.fr       */
+/*   Updated: 2023/05/01 16:28:30 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ void		cd(TokenList *cmd);
 void		echo(TokenList *cmd);
 
 void		execute(TokenList *cmd);
-void		expand(char **tokens);
+void		expand(TokenList *tokens);
 
 TokenList	*ft_tokenize(
 				char *input,
