@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/28 13:39:14 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/05/01 07:54:11 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,8 +73,9 @@ void	free_hash_table(h_table *table);
 void execute(char	**cmd);
 void expand(char **tokens);
 
-TokenList *ft_tokenize(char *input);
-char *expand_variables(const char *input);
+TokenList *ft_tokenize(char *input, TokenList *list, bool quotes[2], char *token_start);
+TokenList *ft_init_tokenize(char *input);
+char *expand_variables(const char *input, bool is_single_quote);
 void free_token_list(TokenList *list);
 bool is_delimiter(char c);
 bool is_quote(char c);

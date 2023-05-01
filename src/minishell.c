@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/04/28 13:38:53 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/05/01 06:44:45 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void minishell_loop(void)
 			continue;
 		}
 		add_history(cmd_line);
-		tokens = ft_tokenize(cmd_line);
+		tokens = ft_init_tokenize(cmd_line);
 		if (!tokens)
 			return ;
 		for (int i = 0; i < tokens->count; i++) {
