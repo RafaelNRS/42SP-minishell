@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/05/01 13:02:26 by mariana          ###   ########.fr       */
+/*   Updated: 2023/05/01 14:12:15 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,13 +56,13 @@ void	minishell_loop(void)
         	char *token_without_quotes = remove_outer_quotes(tokens->tokens[i]);
         	printf("Token %d: %s\n", i, token_without_quotes);
     	}
-		execute(tokens, cmd_line);
+		execute(tokens);
 
-    	// free_token_list(tokens);
-		//expand(tokens);
-		// free(tokens);
-		// if (cmd_line)
-		// 	free(cmd_line);
+    	free_token_list(tokens);
+		expand(tokens);
+		free(tokens);
+		if (cmd_line)
+			free(cmd_line);
 	}
 }
 

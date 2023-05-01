@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/05/01 13:05:47 by mariana          ###   ########.fr       */
+/*   Updated: 2023/05/01 14:09:13 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,9 @@ void		pwd(TokenList *cmd);
 void		exit_minishell(void);
 int			args_count(char **args);
 void		cd(TokenList *cmd);
+void		echo(TokenList *cmd);
 
-void		execute(TokenList *cmd, char *cmd_line);
+void		execute(TokenList *cmd);
 void		expand(char **tokens);
 
 TokenList	*ft_tokenize(
