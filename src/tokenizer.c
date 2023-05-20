@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 08:51:20 by ranascim          #+#    #+#             */
-/*   Updated: 2023/05/01 10:14:19 by mariana          ###   ########.fr       */
+/*   Updated: 2023/05/20 09:24:22 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,17 +38,31 @@ bool	check_d_quote(char *input, bool quotes[2])
 		return (quotes[1]);
 }
 
-char	*remove_outer_quotes(char *token)
+char	*remove_outer_quotes(char *str)
 {
-	int	len;
+	int		len;
+	char	*result;
+	int		i;
+	char	quote;
 
-	len = strlen(token);
-	if (len >= 2 && is_quote(token[0]) && token[0] == token[len - 1])
+	i = 0;
+	result = str;
+	len = strlen(str);
+	while (i < len)
 	{
-		memmove(token, token + 1, len - 2);
-		token[len - 2] = '\0';
+		if (is_quote(str[i]))
+		{
+			quote = str[i++];
+			while (i < len && str[i] != quote)
+				*result++ = str[i++];
+			if (i < len)
+				i++;
+		}
+		else
+			*result++ = str[i++];
 	}
-	return (token);
+	*result = '\0';
+	return (str);
 }
 
 void	free_token_list(TokenList *list)
