@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 16:57:01 by mariana           #+#    #+#             */
-/*   Updated: 2023/05/01 14:09:38 by mariana          ###   ########.fr       */
+/*   Updated: 2023/05/20 11:26:43 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	execute(TokenList *cmd)
+void	execute(t_tk_lst *cmd)
 {
 	if (ft_strncmp(cmd->tokens[0], "export\0", 7) == 0)
 		export(cmd);

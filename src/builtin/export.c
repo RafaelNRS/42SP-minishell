@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/23 14:01:54 by mariana           #+#    #+#             */
-/*   Updated: 2023/05/01 12:29:00 by mariana          ###   ########.fr       */
+/*   Updated: 2023/05/20 11:26:43 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	export(TokenList *var)
+void	export(t_tk_lst *var)
 {
 	int	i;
 

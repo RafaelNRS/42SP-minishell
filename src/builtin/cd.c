@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/23 18:22:23 by mariana           #+#    #+#             */
-/*   Updated: 2023/05/13 12:18:40 by mariana          ###   ########.fr       */
+/*   Updated: 2023/05/20 11:26:43 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void	change_path(char *path)
 		ft_printf("cd: no such file or directory: %s\n", path);
 }
 
-void	change_to_old_path(TokenList *cmd)
+void	change_to_old_path(t_tk_lst *cmd)
 {
 	if (ft_strlen(cmd->tokens[1]) != 1)
 		ft_printf("cd: %s: invalid option\n", cmd->tokens[1]);
@@ -58,7 +58,7 @@ void	change_to_old_path(TokenList *cmd)
 		change_path(ht_search("OLDPWD"));
 }
 
-void	cd_path(char *root_path, TokenList *cmd)
+void	cd_path(char *root_path, t_tk_lst *cmd)
 {
 	char	*tmp_path;
 	char	*path;
@@ -80,7 +80,7 @@ void	cd_path(char *root_path, TokenList *cmd)
 	}
 }
 
-void	cd(TokenList *cmd)
+void	cd(t_tk_lst *cmd)
 {
 	if (cmd->count > 2)
 		ft_printf("cd: too many arguments\n");

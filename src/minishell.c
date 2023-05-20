@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/05/01 16:28:57 by mariana          ###   ########.fr       */
+/*   Updated: 2023/05/20 11:26:43 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,13 @@ static void	read_cmd_line(char **cmd_line)
 
 	buffer = "\033[1;96mguest@minishell $ \033[0m";
 	*cmd_line = readline(buffer);
+	//TODO: Show current working directory in the terminal, etc... 
 }
 
 void	minishell_loop(void)
 {
 	char		*cmd_line;
-	TokenList	*tokens;
+	t_tk_lst	*tokens;
 
 	while (true)
 	{

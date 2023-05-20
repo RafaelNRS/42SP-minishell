@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 08:51:20 by ranascim          #+#    #+#             */
-/*   Updated: 2023/05/20 09:24:22 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/05/20 11:34:33 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,85 @@ bool	is_delimiter(char c)
 bool	is_quote(char c)
 {
 	return (c == '\'' || c == '\"');
+}
+
+bool	is_operator(char c)
+{
+	return (c == '|' || c == '<' || c == '>');
+}
+
+bool	is_double_operator(char c1, char c2)
+{
+	return ((c1 == '<' && c2 == '<') || \
+		(c1 == '>' && c2 == '>'));
+}
+
+static void	shift_characters_right(char *line, int start, int len)
+{
+	int	i;
+
+	i = len;
+	while (i >= start)
+	{
+		line[i + 1] = line[i];
+		i--;
+	}
+}
+
+static void	insert_single_operator_spaces(char *line, int index, int len)
+{
+	if (line[index + 1] != ' ' && line[index + 1] != '\0')
+	{
+		shift_characters_right(line, index, len);
+		line[index + 1] = ' ';
+	}
+	if (line[index - 1] != ' ' && index > 0)
+	{
+		shift_characters_right(line, index - 1, len);
+		line[index] = ' ';
+	}
+}
+
+static void	insert_double_operator_spaces(char *line, int index, int len)
+{
+	if (line[index + 2] != ' ' && line[index + 2] != '\0')
+	{
+		shift_characters_right(line, index + 1, len);
+		line[index + 2] = ' ';
+	}
+	if (line[index - 1] != ' ' && index > 0)
+	{
+		shift_characters_right(line, index - 1, len);
+		line[index] = ' ';
+	}
+}
+
+static void	insert_spaces(char *line, bool quote, int len)
+{
+	int	i;
+
+	i = 0;
+	while (i < len)
+	{
+		if (is_quote(line[i]))
+			quote = !quote;
+		if (is_operator(line[i]) && quote == false)
+		{
+			if (line[i] == '|')
+				insert_single_operator_spaces(line, i, len);
+			else if (line[i] == '<' || line[i] == '>')
+			{
+				if (is_double_operator(line[i], line[i + 1]))
+				{
+					insert_double_operator_spaces(line, i, len);
+					i += 2;
+				}
+				else
+					insert_single_operator_spaces(line, i, len);
+			}
+		}
+		i++;
+	}
 }
 
 bool	check_s_quote(char *input, bool quotes[2])
@@ -65,7 +144,7 @@ char	*remove_outer_quotes(char *str)
 	return (str);
 }
 
-void	free_token_list(TokenList *list)
+void	free_token_list(t_tk_lst *list)
 {
 	int	i;
 
@@ -123,9 +202,9 @@ char	*expand_variables(const char *in_ptr, bool is_single_quote)
 	return (output);
 }
 
-TokenList	*ft_tokenize(char *p, TokenList *list, bool quotes[2], char *t_st)
+t_tk_lst	*ft_tokenize(char *p, t_tk_lst *list, bool quotes[2], char *t_st)
 {
-	list = malloc(sizeof(TokenList));
+	list = malloc(sizeof(t_tk_lst));
 	list->tokens = malloc(sizeof(char *) * MAX_TOKENS);
 	list->count = 0;
 	while (*p)
@@ -151,16 +230,19 @@ TokenList	*ft_tokenize(char *p, TokenList *list, bool quotes[2], char *t_st)
 	return (list);
 }
 
-TokenList	*ft_init_tokenize(char *input)
+t_tk_lst	*ft_init_tokenize(char *input)
 {
-	TokenList	*list;
+	t_tk_lst	*list;
 	bool		quotes[2];
 	char		*token_start;
+	int			len;
 
+	len = ft_strlen(input);
 	token_start = NULL;
 	list = NULL;
 	quotes[0] = false;
 	quotes[1] = false;
+	insert_spaces(input, false, len);
 	list = ft_tokenize(input, list, quotes, token_start);
 	return (list);
 }

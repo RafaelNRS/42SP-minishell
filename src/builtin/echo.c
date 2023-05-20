@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 14:09:25 by mariana           #+#    #+#             */
-/*   Updated: 2023/05/13 11:59:50 by mariana          ###   ########.fr       */
+/*   Updated: 2023/05/20 11:26:43 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	echo(TokenList *cmd)
+void	echo(t_tk_lst *cmd)
 {
 	int	i;
 	int	has_flag_n;
