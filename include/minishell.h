@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/05/20 11:27:00 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/05/20 13:48:46 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,15 @@
 # define MSH_TOKEN_DELIMITER " \t\r\n\a"
 # define ENV_MAX_SIZE 2
 # define TABLE_DEFAULT_SIZE 50
+
+# define PIPE 90
+# define REDIRECT 91
+# define REDIRECT_A 92
+# define HEREDOC 93
+# define INPUT 94
+# define FILE 95
+# define STRING 96
+# define BUILTIN 97
 
 typedef struct t_item
 {
@@ -57,13 +66,19 @@ typedef struct s_tk_lst
 	int		count;
 }	t_tk_lst;
 
-typedef struct s_tk_type
+typedef struct s_token
 {
 	int					type;
 	char				*token;
-	struct t_token_type	*next;
-	struct t_token_type *previous;
-}	t_tk_type;
+	struct s_token	*next;
+	struct s_token	*prev;
+}	t_token;
+
+typedef struct s_tk_tp_lst
+{
+	t_token	*head;
+	t_token	*tail;
+}	t_tk_tp_lst;
 
 extern t_msh	g_msh;
 

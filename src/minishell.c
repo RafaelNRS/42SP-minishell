@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/05/20 11:26:43 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/05/20 12:33:25 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,10 +53,6 @@ void	minishell_loop(void)
 		tokens = ft_init_tokenize(cmd_line);
 		if (!tokens)
 			return ;
-		for (int i = 0; i < tokens->count; i++) {
-        	char *token_without_quotes = remove_outer_quotes(tokens->tokens[i]);
-        	printf("Token %d: %s\n", i, token_without_quotes);
-    	}
 		execute(tokens);
 
     	// free_token_list(tokens);
