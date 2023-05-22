@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 08:51:20 by ranascim          #+#    #+#             */
-/*   Updated: 2023/05/22 17:00:23 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/05/22 17:37:32 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,8 +112,10 @@ static void	insert_spaces(char *line, bool quote, int len)
 					insert_single_operator_spaces(line, i, len);
 			}
 		}
+		len = ft_strlen(line);
 		i++;
 	}
+	line[len] = '\0';
 }
 
 bool	check_s_quote(char *input, bool quotes[2])

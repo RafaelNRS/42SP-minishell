@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/05/22 17:00:04 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/05/22 17:18:41 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,6 @@
 # define MSH_LINE_BUFFER_SIZE 1024
 # define MSH_TOKEN_BUFFER_SIZE 64
 # define MAX_TOKENS 256
-# define MSH_TOKEN_DELIMITER " \t\r\n\a"
-# define ENV_MAX_SIZE 2
 # define TABLE_DEFAULT_SIZE 50
 
 # define PIPE 90
@@ -56,7 +54,6 @@ typedef struct t_table
 typedef struct h_msh
 {
 	t_table	*env;
-	t_table	*local;
 	int		error_code;
 }	t_msh;
 
