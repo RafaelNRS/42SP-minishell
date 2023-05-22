@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/05/20 12:33:25 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/05/22 17:00:00 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,8 @@ static void	read_cmd_line(char **cmd_line)
 void	minishell_loop(void)
 {
 	char		*cmd_line;
-	t_tk_lst	*tokens;
+	t_token_list	*tokens;
+	t_token		*token;
 
 	while (true)
 	{
@@ -53,6 +54,14 @@ void	minishell_loop(void)
 		tokens = ft_init_tokenize(cmd_line);
 		if (!tokens)
 			return ;
+		
+		token = tokens->head;
+		while (token != NULL)
+		{
+			
+			printf("Token %s, Type %d\n",token->token, token->type);
+			token = token->next;
+		}
 		execute(tokens);
 
     	// free_token_list(tokens);

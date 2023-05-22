@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/23 18:22:23 by mariana           #+#    #+#             */
-/*   Updated: 2023/05/20 11:26:43 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/05/22 17:00:00 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,26 +50,26 @@ void	change_path(char *path)
 		ft_printf("cd: no such file or directory: %s\n", path);
 }
 
-void	change_to_old_path(t_tk_lst *cmd)
+void	change_to_old_path(t_token_list *cmd)
 {
-	if (ft_strlen(cmd->tokens[1]) != 1)
-		ft_printf("cd: %s: invalid option\n", cmd->tokens[1]);
+	if (ft_strlen(cmd->head->next->token) != 1)
+		ft_printf("cd: %s: invalid option\n", cmd->head->next->token);
 	else
 		change_path(ht_search("OLDPWD"));
 }
 
-void	cd_path(char *root_path, t_tk_lst *cmd)
+void	cd_path(char *root_path, t_token_list *cmd)
 {
 	char	*tmp_path;
 	char	*path;
 	int		len;
 	int		root_len;
 
-	if (cmd->count == 1 || ft_strlen(cmd->tokens[1]) == 1)
+	if (cmd->count == 1 || ft_strlen(cmd->head->next->token) == 1)
 		change_path(ht_search(root_path));
 	else
 	{
-		path = (char *)(cmd->tokens[1] + 1);
+		path = (char *)(cmd->head->next->token + 1);
 		root_len = ft_strlen(ht_search(root_path));
 		len = root_len + ft_strlen(path) + 1;
 		tmp_path = (char *) malloc(sizeof(char) * len);
@@ -80,18 +80,18 @@ void	cd_path(char *root_path, t_tk_lst *cmd)
 	}
 }
 
-void	cd(t_tk_lst *cmd)
+void	cd(t_token_list *cmd)
 {
 	if (cmd->count > 2)
 		ft_printf("cd: too many arguments\n");
 	if (cmd->count == 1)
 		change_path(ht_search("HOME"));
-	else if (ft_strncmp(cmd->tokens[1], "~", 1) == 0)
+	else if (ft_strncmp(cmd->head->next->token, "~", 1) == 0)
 		cd_path("HOME", cmd);
-	else if (ft_strncmp(cmd->tokens[1], "-", 1) == 0)
+	else if (ft_strncmp(cmd->head->next->token, "-", 1) == 0)
 		change_to_old_path(cmd);
-	else if (ft_strncmp(cmd->tokens[1], ".", 1) == 0)
+	else if (ft_strncmp(cmd->head->next->token, ".", 1) == 0)
 		cd_path("PWD", cmd);
 	else
-		change_path(cmd->tokens[1]);
+		change_path(cmd->head->next->token);
 }

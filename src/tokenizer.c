@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 08:51:20 by ranascim          #+#    #+#             */
-/*   Updated: 2023/05/20 14:12:45 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/05/22 17:00:23 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,13 +37,13 @@ static bool	is_builtin(char *token)
 {
 	if (!token)
 		return (false);
-	if (!(ft_strcmp(token, "echo\0")) || !(ft_strcmp(token, "cd\0")))
+	if (!(ft_strncmp(token, "echo\0", 5)) || !(ft_strncmp(token, "cd\0", 3)))
 		return (true);
-	if (!(ft_strcmp(token, "pwd")) || !(ft_strcmp(token, "export")))
+	if (!(ft_strncmp(token, "pwd", 3)) || !(ft_strncmp(token, "export", 6)))
 		return (true);
-	if (!(ft_strcmp(token, "unset")) || !(ft_strcmp(token, "env")))
+	if (!(ft_strncmp(token, "unset", 5)) || !(ft_strncmp(token, "env", 3)))
 		return (true);
-	if (!(ft_strcmp(token, "exit")))
+	if (!(ft_strncmp(token, "exit", 4)))
 		return (true);
 	return (false);
 }
@@ -159,20 +159,6 @@ char	*remove_outer_quotes(char *str)
 	return (str);
 }
 
-void	free_token_list(t_tk_lst *list)
-{
-	int	i;
-
-	i = 0;
-	while (i < list->count)
-	{
-		free(list->tokens[i]);
-		i++;
-	}
-	free(list->tokens);
-	free(list);
-}
-
 void	copy_variable_value(char *var_name, char **out_ptr)
 {
 	char	*var_value;
@@ -217,59 +203,38 @@ char	*expand_variables(const char *in_ptr, bool is_single_quote)
 	return (output);
 }
 
-t_tk_lst	*ft_tokenize(char *p, t_tk_lst *list, bool quotes[2], char *t_st)
+t_token_list	*new_token_list(void)
 {
-	list = malloc(sizeof(t_tk_lst));
-	list->tokens = malloc(sizeof(char *) * MAX_TOKENS);
-	list->count = 0;
-	while (*p)
-	{
-		quotes[0] = check_s_quote(p, quotes);
-		quotes[1] = check_d_quote(p, quotes);
-		if (is_delimiter(*p) && !quotes[0] && !quotes[1])
-		{
-			if (t_st)
-			{
-				*p = '\0';
-				if (list->count < MAX_TOKENS)
-					list->tokens[list->count++] = expand_variables(t_st, false);
-				t_st = NULL;
-			}
-		}
-		else if (!t_st)
-			t_st = p;
-		p++;
-	}
-	if (t_st && list->count < MAX_TOKENS)
-		list->tokens[list->count++] = expand_variables(t_st, false);
-	return (list);
-}
+	t_token_list	*list;
 
-t_tk_tp_lst *new_token_list(void)
-{
-	t_tk_tp_lst *list = malloc(sizeof(t_tk_tp_lst));
+	list = malloc(sizeof(t_token_list));
 	if (list)
 	{
 		list->head = NULL;
 		list->tail = NULL;
+		list->count = 0;
 	}
-	return list;
+	return (list);
 }
 
-t_token *new_token(char *token)
+t_token	*new_token(char *token)
 {
-	t_token *node = malloc(sizeof(t_token));
+	t_token	*node;
+
+	node = malloc(sizeof(t_token));
 	if (node)
 	{
 		node->token = token;
 		node->next = NULL;
 		node->prev = NULL;
+		node->type = 0;
 	}
-	return node;
+	return (node);
 }
 
-void add_token(t_tk_tp_lst *list, t_token *node)
+void	add_token(t_token_list *list, t_token *node)
 {
+	remove_outer_quotes(node->token);
 	if (!list->head)
 	{
 		list->head = node;
@@ -285,63 +250,93 @@ void add_token(t_tk_tp_lst *list, t_token *node)
 
 static int	define_operator(char *token)
 {
-	if (!(ft_strcmp(token, "|")))
+	if (!(ft_strncmp(token, "|", 1)))
 		return (PIPE);
-	if (is_double_operator(token, token+1))
-		if (!(ft_strcmp(token, ">")))
+	if (is_double_operator(token[0], token[1]))
+	{
+		if (!(ft_strncmp(token, ">", 1)))
 			return (REDIRECT_A);
-		if (!(ft_strcmp(token, "<")))
+		if (!(ft_strncmp(token, "<", 1)))
 			return (HEREDOC);
-	if (!(ft_strcmp(token, ">")))
+	}
+	if (!(ft_strncmp(token, ">", 1)))
 		return (REDIRECT);
-	if (!(ft_strcmp(token, "<")))
+	if (!(ft_strncmp(token, "<", 1)))
 		return (INPUT);
 	return (false);
 }
 
-static int	define_type(t_token **token)
+static void	define_type(t_token **token)
 {
 	int	prev_type;
 
-	if (token->prev && token->prev->type)
-		prev_type = token->prev->type;
-	if (is_builtin(token->token) && prev_type != REDIRECT && \
+	if ((*token)->prev && (*token)->prev->type)
+		prev_type = (*token)->prev->type;
+	if (is_builtin((*token)->token) && prev_type != REDIRECT && \
 		prev_type != REDIRECT_A && prev_type != INPUT && prev_type != HEREDOC)
-		token->type = BUILTIN;
-	else if (is_operator(token->token))
-		token->type = define_operator(token->token);
-	else if (prev_type == REDIRECT)
-		token->type = FILE;
+		(*token)->type = BUILTIN;
+	else if (is_operator((*token)->token[0]))
+		(*token)->type = define_operator((*token)->token);
+	else if (prev_type == REDIRECT || prev_type == REDIRECT_A \
+		|| prev_type == INPUT)
+		(*token)->type = FILE;
 	else
-		token->type = BUILTIN;
+		(*token)->type = STRING;
 }
 
-t_tk_lst	*ft_init_tokenize(char *input)
+void	ft_tokenize(char *p, t_token_list **list, bool quotes[2], char *t_st)
 {
-	t_tk_lst	*list;
-	t_tk_tp_lst	*token_list;
-	t_token		*token;
-	bool		quotes[2];
-	char		*token_start;
-	int			len;
+	while (*p)
+	{
+		quotes[0] = check_s_quote(p, quotes);
+		quotes[1] = check_d_quote(p, quotes);
+		if (is_delimiter(*p) && !quotes[0] && !quotes[1])
+		{
+			if (t_st)
+			{
+				*p = '\0';
+				if ((*list)->count++ < MAX_TOKENS)
+					add_token((*list), \
+					new_token(expand_variables(t_st, false)));
+				t_st = NULL;
+			}
+		}
+		else if (!t_st)
+			t_st = p;
+		p++;
+	}
+	if (t_st && (*list)->count < MAX_TOKENS)
+		add_token((*list), new_token(expand_variables(t_st, false)));
+}
 
-	token_list = new_token_list();
-	if (!token_list)
+static void	define_types(t_token_list **list)
+{
+	t_token	*current;
+
+	current = (*list)->head;
+	while (current != NULL)
+	{
+		define_type(&current);
+		current = current -> next;
+	}
+}
+
+t_token_list	*ft_init_tokenize(char *input)
+{
+	t_token_list	*list;
+	bool			quotes[2];
+	char			*token_start;
+	int				len;
+
+	list = new_token_list();
+	if (!list)
 		return (NULL);
 	len = ft_strlen(input);
 	token_start = NULL;
-	list = NULL;
 	quotes[0] = false;
 	quotes[1] = false;
 	insert_spaces(input, false, len);
-	list = ft_tokenize(input, list, quotes, token_start);
-	for (int i = 0; i < list->count; i++) {
-        remove_outer_quotes(list->tokens[i]);
-        printf("Token %d: %s\n", i, list->tokens[i]);
-		token = new_token(list->tokens[i]);
-		add_token(token_list, token);
-		token->type = define_type(&token);
-    }
-	
+	ft_tokenize(input, &list, quotes, token_start);
+	define_types(&list);
 	return (list);
 }
