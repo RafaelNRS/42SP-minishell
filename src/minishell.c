@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/05/22 17:00:00 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/05/22 17:01:49 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,6 @@ void	minishell_loop(void)
 		token = tokens->head;
 		while (token != NULL)
 		{
-			
 			printf("Token %s, Type %d\n",token->token, token->type);
 			token = token->next;
 		}
