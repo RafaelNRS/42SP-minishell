@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 08:51:20 by ranascim          #+#    #+#             */
-/*   Updated: 2023/05/22 17:37:32 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/06 15:31:54 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -276,7 +276,7 @@ static void	define_type(t_token **token)
 		prev_type = (*token)->prev->type;
 	if (is_builtin((*token)->token) && prev_type != REDIRECT && \
 		prev_type != REDIRECT_A && prev_type != INPUT && prev_type != HEREDOC)
-		(*token)->type = BUILTIN;
+		(*token)->type = STRING;
 	else if (is_operator((*token)->token[0]))
 		(*token)->type = define_operator((*token)->token);
 	else if (prev_type == REDIRECT || prev_type == REDIRECT_A \
