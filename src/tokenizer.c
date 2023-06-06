@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 08:51:20 by ranascim          #+#    #+#             */
-/*   Updated: 2023/05/20 11:34:33 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/06 15:31:54 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,21 @@ bool	is_double_operator(char c1, char c2)
 {
 	return ((c1 == '<' && c2 == '<') || \
 		(c1 == '>' && c2 == '>'));
+}
+
+static bool	is_builtin(char *token)
+{
+	if (!token)
+		return (false);
+	if (!(ft_strncmp(token, "echo\0", 5)) || !(ft_strncmp(token, "cd\0", 3)))
+		return (true);
+	if (!(ft_strncmp(token, "pwd", 3)) || !(ft_strncmp(token, "export", 6)))
+		return (true);
+	if (!(ft_strncmp(token, "unset", 5)) || !(ft_strncmp(token, "env", 3)))
+		return (true);
+	if (!(ft_strncmp(token, "exit", 4)))
+		return (true);
+	return (false);
 }
 
 static void	shift_characters_right(char *line, int start, int len)
@@ -97,8 +112,10 @@ static void	insert_spaces(char *line, bool quote, int len)
 					insert_single_operator_spaces(line, i, len);
 			}
 		}
+		len = ft_strlen(line);
 		i++;
 	}
+	line[len] = '\0';
 }
 
 bool	check_s_quote(char *input, bool quotes[2])
@@ -142,20 +159,6 @@ char	*remove_outer_quotes(char *str)
 	}
 	*result = '\0';
 	return (str);
-}
-
-void	free_token_list(t_tk_lst *list)
-{
-	int	i;
-
-	i = 0;
-	while (i < list->count)
-	{
-		free(list->tokens[i]);
-		i++;
-	}
-	free(list->tokens);
-	free(list);
 }
 
 void	copy_variable_value(char *var_name, char **out_ptr)
@@ -202,11 +205,89 @@ char	*expand_variables(const char *in_ptr, bool is_single_quote)
 	return (output);
 }
 
-t_tk_lst	*ft_tokenize(char *p, t_tk_lst *list, bool quotes[2], char *t_st)
+t_token_list	*new_token_list(void)
 {
-	list = malloc(sizeof(t_tk_lst));
-	list->tokens = malloc(sizeof(char *) * MAX_TOKENS);
-	list->count = 0;
+	t_token_list	*list;
+
+	list = malloc(sizeof(t_token_list));
+	if (list)
+	{
+		list->head = NULL;
+		list->tail = NULL;
+		list->count = 0;
+	}
+	return (list);
+}
+
+t_token	*new_token(char *token)
+{
+	t_token	*node;
+
+	node = malloc(sizeof(t_token));
+	if (node)
+	{
+		node->token = token;
+		node->next = NULL;
+		node->prev = NULL;
+		node->type = 0;
+	}
+	return (node);
+}
+
+void	add_token(t_token_list *list, t_token *node)
+{
+	remove_outer_quotes(node->token);
+	if (!list->head)
+	{
+		list->head = node;
+		list->tail = node;
+	}
+	else
+	{
+		node->prev = list->tail;
+		list->tail->next = node;
+		list->tail = node;
+	}
+}
+
+static int	define_operator(char *token)
+{
+	if (!(ft_strncmp(token, "|", 1)))
+		return (PIPE);
+	if (is_double_operator(token[0], token[1]))
+	{
+		if (!(ft_strncmp(token, ">", 1)))
+			return (REDIRECT_A);
+		if (!(ft_strncmp(token, "<", 1)))
+			return (HEREDOC);
+	}
+	if (!(ft_strncmp(token, ">", 1)))
+		return (REDIRECT);
+	if (!(ft_strncmp(token, "<", 1)))
+		return (INPUT);
+	return (false);
+}
+
+static void	define_type(t_token **token)
+{
+	int	prev_type;
+
+	if ((*token)->prev && (*token)->prev->type)
+		prev_type = (*token)->prev->type;
+	if (is_builtin((*token)->token) && prev_type != REDIRECT && \
+		prev_type != REDIRECT_A && prev_type != INPUT && prev_type != HEREDOC)
+		(*token)->type = STRING;
+	else if (is_operator((*token)->token[0]))
+		(*token)->type = define_operator((*token)->token);
+	else if (prev_type == REDIRECT || prev_type == REDIRECT_A \
+		|| prev_type == INPUT)
+		(*token)->type = FILE;
+	else
+		(*token)->type = STRING;
+}
+
+void	ft_tokenize(char *p, t_token_list **list, bool quotes[2], char *t_st)
+{
 	while (*p)
 	{
 		quotes[0] = check_s_quote(p, quotes);
@@ -216,8 +297,9 @@ t_tk_lst	*ft_tokenize(char *p, t_tk_lst *list, bool quotes[2], char *t_st)
 			if (t_st)
 			{
 				*p = '\0';
-				if (list->count < MAX_TOKENS)
-					list->tokens[list->count++] = expand_variables(t_st, false);
+				if ((*list)->count++ < MAX_TOKENS)
+					add_token((*list), \
+					new_token(expand_variables(t_st, false)));
 				t_st = NULL;
 			}
 		}
@@ -225,24 +307,38 @@ t_tk_lst	*ft_tokenize(char *p, t_tk_lst *list, bool quotes[2], char *t_st)
 			t_st = p;
 		p++;
 	}
-	if (t_st && list->count < MAX_TOKENS)
-		list->tokens[list->count++] = expand_variables(t_st, false);
-	return (list);
+	if (t_st && (*list)->count < MAX_TOKENS)
+		add_token((*list), new_token(expand_variables(t_st, false)));
 }
 
-t_tk_lst	*ft_init_tokenize(char *input)
+static void	define_types(t_token_list **list)
 {
-	t_tk_lst	*list;
-	bool		quotes[2];
-	char		*token_start;
-	int			len;
+	t_token	*current;
 
+	current = (*list)->head;
+	while (current != NULL)
+	{
+		define_type(&current);
+		current = current -> next;
+	}
+}
+
+t_token_list	*ft_init_tokenize(char *input)
+{
+	t_token_list	*list;
+	bool			quotes[2];
+	char			*token_start;
+	int				len;
+
+	list = new_token_list();
+	if (!list)
+		return (NULL);
 	len = ft_strlen(input);
 	token_start = NULL;
-	list = NULL;
 	quotes[0] = false;
 	quotes[1] = false;
 	insert_spaces(input, false, len);
-	list = ft_tokenize(input, list, quotes, token_start);
+	ft_tokenize(input, &list, quotes, token_start);
+	define_types(&list);
 	return (list);
 }

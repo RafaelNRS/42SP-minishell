@@ -6,29 +6,29 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/23 14:01:54 by mariana           #+#    #+#             */
-/*   Updated: 2023/05/20 11:26:43 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/05/22 17:00:00 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	export(t_tk_lst *var)
+void	export(t_token_list *var)
 {
-	int	i;
+	t_token *current;
 
-	i = 1;
+	current = var->head->next;
 	if (var->count == 2)
 	{
-		if (ft_strchr(var->tokens[i], '='))
-			add_t_item(var->tokens[i]);
+		if (ft_strchr(current->token, '='))
+			add_t_item(current->token);
 	}
 	else
 	{
-		while (i <= var->count)
+		while (current != NULL)
 		{
-			if (ft_strchr(var->tokens[i], '='))
-				add_t_item(var->tokens[i]);
-			i++;
+			if (ft_strchr(current->token, '='))
+				add_t_item(current->token);
+			current = current->next;
 		}
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/05/20 11:27:00 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/06 15:27:10 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,16 @@
 # define MSH_LINE_BUFFER_SIZE 1024
 # define MSH_TOKEN_BUFFER_SIZE 64
 # define MAX_TOKENS 256
-# define MSH_TOKEN_DELIMITER " \t\r\n\a"
-# define ENV_MAX_SIZE 2
 # define TABLE_DEFAULT_SIZE 50
+
+# define PIPE 90
+# define REDIRECT 91
+# define REDIRECT_A 92
+# define HEREDOC 93
+# define INPUT 94
+# define FILE 95
+# define STRING 96
+# define BUILTIN 97
 
 typedef struct t_item
 {
@@ -47,23 +54,23 @@ typedef struct t_table
 typedef struct h_msh
 {
 	t_table	*env;
-	t_table	*local;
 	int		error_code;
 }	t_msh;
 
-typedef struct s_tk_lst
-{
-	char	**tokens;
-	int		count;
-}	t_tk_lst;
-
-typedef struct s_tk_type
+typedef struct s_token
 {
 	int					type;
 	char				*token;
-	struct t_token_type	*next;
-	struct t_token_type *previous;
-}	t_tk_type;
+	struct s_token	*next;
+	struct s_token	*prev;
+}	t_token;
+
+typedef struct s_token_list
+{
+	t_token	*head;
+	t_token	*tail;
+	int	count;
+}	t_token_list;
 
 extern t_msh	g_msh;
 
@@ -81,26 +88,25 @@ char		*ht_search(char *key);
 void		free_hash_table(void);
 
 // builtin
-void		export(t_tk_lst *var);
-void		unset(t_tk_lst *var);
+void		export(t_token_list *var);
+void		unset(t_token_list *var);
 void		env(void);
-void		pwd(t_tk_lst *cmd);
+void		pwd(t_token_list *cmd);
 void		exit_minishell(void);
 int			args_count(char **args);
-void		cd(t_tk_lst *cmd);
-void		echo(t_tk_lst *cmd);
+void		cd(t_token_list *cmd);
+void		echo(t_token_list *cmd);
 
-void		execute(t_tk_lst *cmd);
-void		expand(t_tk_lst *tokens);
+void		execute(t_token_list *cmd);
+void		expand(t_token_list *tokens);
 
-t_tk_lst	*ft_tokenize(
+void	ft_tokenize(
 				char *input,
-				t_tk_lst *list,
+				t_token_list **list,
 				bool quotes[2],
 				char *token_start);
-t_tk_lst	*ft_init_tokenize(char *input);
+t_token_list	*ft_init_tokenize(char *input);
 char		*expand_variables(const char *input, bool is_single_quote);
-void		free_token_list(t_tk_lst *list);
 bool		is_delimiter(char c);
 bool		is_quote(char c);
 char		*remove_outer_quotes(char *token);
