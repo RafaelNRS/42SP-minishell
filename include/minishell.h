@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/06 15:27:10 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/08 21:18:02 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,28 @@
 # define PIPE 90
 # define REDIRECT 91
 # define REDIRECT_A 92
-# define HEREDOC 93
+# define INPUT_A 93
 # define INPUT 94
 # define FILE 95
-# define STRING 96
+# define COMMAND 96
 # define BUILTIN 97
+# define END_LIST 73
+
+// bolinha env - nao é buildin deveria ser string?
+// echo $? < bolinha - echo $? deveria ser input e nao builtin?
+// echo $? > bolinha - echo $? deveria ser output e nao builtin?
+// 				  - bolinha deveria ser file?
+// a < b 
+// a = string
+// < = input
+// b = file - deveria ser string
+// a contando ultimo espaço como mais um caracter
+
+# define IN 0
+# define OUT 1
+
+# define TRUE 1
+# define FALSE 0
 
 typedef struct t_item
 {
@@ -72,6 +89,20 @@ typedef struct s_token_list
 	int	count;
 }	t_token_list;
 
+typedef struct s_link_cmds
+{
+	char			*full_cmd;
+	char			*cmd;
+	int				type;
+	struct s_link_cmds	*next;
+}	t_link_cmds;
+
+typedef struct s_cmd_list
+{
+	t_link_cmds	*chained_cmds;
+	struct s_link_cmds	*next;
+}	t_cmd_list;
+
 extern t_msh	g_msh;
 
 void		msh_error(int error_code);
@@ -88,17 +119,17 @@ char		*ht_search(char *key);
 void		free_hash_table(void);
 
 // builtin
-void		export(t_token_list *var);
-void		unset(t_token_list *var);
-void		env(void);
-void		pwd(t_token_list *cmd);
-void		exit_minishell(void);
-int			args_count(char **args);
-void		cd(t_token_list *cmd);
-void		echo(t_token_list *cmd);
+// void		export(char *var);
+// void		unset(char *var);
+// void		env(void);
+// void		pwd(char *cmd);
+// void		exit_minishell(void);
+// int			args_count(char **args);
+// void		cd(char *cmd);
+// void		echo(char *cmd);
 
-void		execute(t_token_list *cmd);
-void		expand(t_token_list *tokens);
+// void		execute(char *cmd);
+// void		expand(char *tokens);
 
 void	ft_tokenize(
 				char *input,

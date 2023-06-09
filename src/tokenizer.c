@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 08:51:20 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/06 15:31:54 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/08 17:02:22 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,7 +214,7 @@ t_token_list	*new_token_list(void)
 	{
 		list->head = NULL;
 		list->tail = NULL;
-		list->count = 0;
+		list->count = 1;
 	}
 	return (list);
 }
@@ -259,7 +259,7 @@ static int	define_operator(char *token)
 		if (!(ft_strncmp(token, ">", 1)))
 			return (REDIRECT_A);
 		if (!(ft_strncmp(token, "<", 1)))
-			return (HEREDOC);
+			return (INPUT_A);
 	}
 	if (!(ft_strncmp(token, ">", 1)))
 		return (REDIRECT);
@@ -275,15 +275,15 @@ static void	define_type(t_token **token)
 	if ((*token)->prev && (*token)->prev->type)
 		prev_type = (*token)->prev->type;
 	if (is_builtin((*token)->token) && prev_type != REDIRECT && \
-		prev_type != REDIRECT_A && prev_type != INPUT && prev_type != HEREDOC)
-		(*token)->type = STRING;
+		prev_type != REDIRECT_A && prev_type != INPUT && prev_type != INPUT_A)
+		(*token)->type = COMMAND;
 	else if (is_operator((*token)->token[0]))
 		(*token)->type = define_operator((*token)->token);
 	else if (prev_type == REDIRECT || prev_type == REDIRECT_A \
 		|| prev_type == INPUT)
 		(*token)->type = FILE;
 	else
-		(*token)->type = STRING;
+		(*token)->type = COMMAND;
 }
 
 void	ft_tokenize(char *p, t_token_list **list, bool quotes[2], char *t_st)
