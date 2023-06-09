@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/09 12:48:16 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/09 17:13:14 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,22 @@
 # define MAX_TOKENS 256
 # define TABLE_DEFAULT_SIZE 50
 
-# define PIPE 90
-# define REDIRECT 91
-# define REDIRECT_A 92
-# define HEREDOC 93
-# define INPUT 94
-# define FILE 95
-# define STRING 96
-# define SEMICOLON 97
+// symbols
+# define PIPE 90		// |
+# define REDIRECT 91	// >
+# define REDIRECT_A 92	// >>
+# define HEREDOC 93		// <<
+# define INPUT 94		// <
+# define SEMICOLON 95	// ;
+
+// after symbols
+# define FILE 96		// after >
+# define FILE_A 97		// after >>
+# define INPUT_FILE 99	// after <
+# define EOF 99			// after <<
+
+// generic
+# define STRING 100
 
 typedef struct t_item
 {

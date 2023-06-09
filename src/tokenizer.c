@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 08:51:20 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/09 13:22:50 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/09 17:19:20 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -284,16 +284,18 @@ static void	define_type(t_token **token)
 
 	if ((*token)->prev && (*token)->prev->type)
 		prev_type = (*token)->prev->type;
-	if (is_builtin((*token)->token) && prev_type != REDIRECT && \
-		prev_type != REDIRECT_A && prev_type != INPUT && prev_type != HEREDOC)
-		(*token)->type = STRING;
-	else if (is_operator((*token)->token[0]))
+	if (is_operator((*token)->token[0]))
 		(*token)->type = define_operator((*token)->token);
 	else if (is_semi((*token)->token[0]))
 		(*token)->type = SEMICOLON;
-	else if (prev_type == REDIRECT || prev_type == REDIRECT_A \
-		|| prev_type == INPUT)
+	else if (prev_type == REDIRECT)
 		(*token)->type = FILE;
+	else if (prev_type == REDIRECT_A)
+		(*token)->type = FILE_A;
+	else if (prev_type == INPUT)
+		(*token)->type = INPUT_FILE;
+	else if (prev_type == HEREDOC)
+		(*token)->type = EOF;
 	else
 		(*token)->type = STRING;
 }
