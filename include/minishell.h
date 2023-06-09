@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/09 17:21:04 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/09 17:48:11 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@
 // after symbols
 # define FILE 96		// after >
 # define FILE_A 97		// after >>
-# define INPUT_FILE 99	// after <
+# define INPUT_FILE 98	// after <
 # define END_OF_FILE 99			// after <<
 
 // generic
