@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 08:51:20 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/09 17:21:12 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/09 17:21:31 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,20 +43,20 @@ bool	is_double_operator(char c1, char c2)
 		(c1 == '>' && c2 == '>'));
 }
 
-static bool	is_builtin(char *token)
-{
-	if (!token)
-		return (false);
-	if (!(ft_strncmp(token, "echo\0", 5)) || !(ft_strncmp(token, "cd\0", 3)))
-		return (true);
-	if (!(ft_strncmp(token, "pwd", 3)) || !(ft_strncmp(token, "export", 6)))
-		return (true);
-	if (!(ft_strncmp(token, "unset", 5)) || !(ft_strncmp(token, "env", 3)))
-		return (true);
-	if (!(ft_strncmp(token, "exit", 4)))
-		return (true);
-	return (false);
-}
+// static bool	is_builtin(char *token)
+// {
+// 	if (!token)
+// 		return (false);
+// 	if (!(ft_strncmp(token, "echo\0", 5)) || !(ft_strncmp(token, "cd\0", 3)))
+// 		return (true);
+// 	if (!(ft_strncmp(token, "pwd", 3)) || !(ft_strncmp(token, "export", 6)))
+// 		return (true);
+// 	if (!(ft_strncmp(token, "unset", 5)) || !(ft_strncmp(token, "env", 3)))
+// 		return (true);
+// 	if (!(ft_strncmp(token, "exit", 4)))
+// 		return (true);
+// 	return (false);
+// }
 
 static void	shift_characters_right(char *line, int start, int len)
 {
