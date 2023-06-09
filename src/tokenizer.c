@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 08:51:20 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/08 17:02:22 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/09 15:24:10 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,16 @@ bool	is_quote(char c)
 bool	is_operator(char c)
 {
 	return (c == '|' || c == '<' || c == '>');
+}
+
+bool	is_semi(char c)
+{
+	return (c == ';');
+}
+
+bool	ft_isalnumvar(char c)
+{
+	return (ft_isdigit(c) || ft_isalpha(c) || c == '?');
 }
 
 bool	is_double_operator(char c1, char c2)
@@ -88,18 +98,15 @@ static void	insert_double_operator_spaces(char *line, int index, int len)
 	}
 }
 
-static void	insert_spaces(char *line, bool quote, int len)
+static void	insert_spaces(char *line, bool quote, int len, int i)
 {
-	int	i;
-
-	i = 0;
 	while (i < len)
 	{
 		if (is_quote(line[i]))
 			quote = !quote;
-		if (is_operator(line[i]) && quote == false)
+		if ((is_operator(line[i]) && quote == false) || is_semi(line[i]))
 		{
-			if (line[i] == '|')
+			if (line[i] == '|' || line[i] == ';')
 				insert_single_operator_spaces(line, i, len);
 			else if (line[i] == '<' || line[i] == '>')
 			{
@@ -165,7 +172,10 @@ void	copy_variable_value(char *var_name, char **out_ptr)
 {
 	char	*var_value;
 
-	var_value = getenv(var_name);
+	if (var_name[0] != '?')
+		var_value = getenv(var_name);
+	else
+		var_value = ft_itoa(g_msh.error_code);
 	if (var_value)
 	{
 		ft_strlcpy(*out_ptr, var_value, ft_strlen(var_value) + 1);
@@ -177,7 +187,7 @@ void	handle_var_exp(const char **in_ptr, char *var, char **out, bool s_quote)
 {
 	char	*var_name_ptr;
 
-	if (**in_ptr == '$' && !s_quote && ft_isalnum(*(*in_ptr + 1)))
+	if (**in_ptr == '$' && !s_quote && ft_isalnumvar(*(*in_ptr + 1)))
 	{
 		(*in_ptr)++;
 		var_name_ptr = var;
@@ -279,6 +289,8 @@ static void	define_type(t_token **token)
 		(*token)->type = COMMAND;
 	else if (is_operator((*token)->token[0]))
 		(*token)->type = define_operator((*token)->token);
+	else if (is_semi((*token)->token[0]))
+		(*token)->type = SEMICOLON;
 	else if (prev_type == REDIRECT || prev_type == REDIRECT_A \
 		|| prev_type == INPUT)
 		(*token)->type = FILE;
@@ -307,7 +319,7 @@ void	ft_tokenize(char *p, t_token_list **list, bool quotes[2], char *t_st)
 			t_st = p;
 		p++;
 	}
-	if (t_st && (*list)->count < MAX_TOKENS)
+	if (t_st && (*list)->count++ < MAX_TOKENS)
 		add_token((*list), new_token(expand_variables(t_st, false)));
 }
 
@@ -329,7 +341,9 @@ t_token_list	*ft_init_tokenize(char *input)
 	bool			quotes[2];
 	char			*token_start;
 	int				len;
+	int				i;
 
+	i = 0;
 	list = new_token_list();
 	if (!list)
 		return (NULL);
@@ -337,7 +351,7 @@ t_token_list	*ft_init_tokenize(char *input)
 	token_start = NULL;
 	quotes[0] = false;
 	quotes[1] = false;
-	insert_spaces(input, false, len);
+	insert_spaces(input, false, len, i);
 	ft_tokenize(input, &list, quotes, token_start);
 	define_types(&list);
 	return (list);

@@ -50,7 +50,9 @@ FILES_C = ft_isalpha.c \
                 ft_lstclear.c \
                 ft_lstiter.c \
                 ft_lstmap.c \
-				get_next_line.c
+				get_next_line.c \
+				ft_isspace.c \
+				ft_isempty.c
 
 FILES_O 	= $(FILES_C:.c=.o)
 

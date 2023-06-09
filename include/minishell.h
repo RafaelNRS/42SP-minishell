@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/08 21:18:02 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/09 15:23:54 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,7 @@
 # define INPUT 94
 # define FILE 95
 # define COMMAND 96
-# define BUILTIN 97
-# define END_LIST 73
+# define SEMICOLON 97
 
 // bolinha env - nao é buildin deveria ser string?
 // echo $? < bolinha - echo $? deveria ser input e nao builtin?

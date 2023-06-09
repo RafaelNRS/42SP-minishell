@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/08 21:18:45 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/09 15:24:53 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,7 +179,7 @@ int validate_tokens(t_token_list *tokens_lst)
 	while (i < tokens_lst->count)
 	{
 		check_tokens(token, i, &error);
-		// if (type == END_LIST && token->next)
+		// if (type == SEMICOLON && token->next)
 		// 	check_tokens(token, i, &error);
 		if (token->next)
 			token = token->next;
@@ -319,7 +319,7 @@ void minishell_loop(void)
 		signal(SIGQUIT, SIG_IGN);
 		signal(SIGINT, sig_handler);
 		read_cmd_line(&cmd_line);
-		if (ft_strlen(cmd_line) == 0)
+		if (ft_strlen(cmd_line) == 0 || ft_isempty(cmd_line))
 		{
 			free(cmd_line);
 			continue;
@@ -341,6 +341,8 @@ void minishell_loop(void)
 		// if (syntax_analysis_error != FALSE)
 		// 	ft_printf("deu erro!!!");
 		// execute_commands(tokens);
+		// printf("Total tokens: %d\n",tokens->count);
+		// execute(tokens);
 
 		// free_token_list(tokens);
 		// expand(tokens);
