@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 08:51:20 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/09 17:19:20 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/09 17:21:12 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -295,7 +295,7 @@ static void	define_type(t_token **token)
 	else if (prev_type == INPUT)
 		(*token)->type = INPUT_FILE;
 	else if (prev_type == HEREDOC)
-		(*token)->type = EOF;
+		(*token)->type = END_OF_FILE;
 	else
 		(*token)->type = STRING;
 }
