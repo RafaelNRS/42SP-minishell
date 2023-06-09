@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/09 17:29:11 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/09 18:47:39 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,17 +82,27 @@ void check_tokens(t_token	*token, int i, int *error)
 	{
 		if (i == 0 || !token->prev)
 			*error = 2; // ft_printf("syntax error near unexpected token `|'")
-		else if (token->prev->type != STRING && token->prev->type != FILE)
+		else if (token->prev->type != STRING && token->prev->type != FILE &&
+			token->prev->type != FILE_A)
 			*error = 2; // ft_printf("syntax error near unexpected token `|'")
 	}
 	else if (type == REDIRECT || type == REDIRECT_A ||
-		type == INPUT || type == INPUT_A)
+		type == INPUT || type == HEREDOC)
 	{
 		if (!token->next)
-			*error = 1;	  // ft_printf("parse error near `\n'");
-		else if (token->next->type != FILE)
-			*error = 1; // ft_printf("parse error near `%d'", token->token)
+			*error = 1;	  // ft_printf("syntax error near unexpected token `\n'");
+		else if (token->prev && token->prev->type != STRING)
+			*error = 1; // ft_printf("syntax error near unexpected token `%d'", token->token)
+		else if (type == REDIRECT && token->next->type != FILE) 		// > 91-96
+			*error = 1; // ft_printf("syntax error near unexpected token `%d'", token->token)
+		else if (type == REDIRECT_A && token->next->type != FILE_A) 	// >> 92-97
+			*error = 1; // ft_printf("syntax error near unexpected token `%d'", token->token)
+		else if (type == INPUT && token->next->type != INPUT_FILE) 		// < 94-98
+			*error = 1; // ft_printf("syntax error near unexpected token `%d'", token->token)
+		else if (type == HEREDOC && token->next->type != END_OF_FILE) 	// << 93-99
+			*error = 1; // ft_printf("syntax error near unexpected token `%d'", token->token)
 	}
+
 	// cat < ping | grep m > test | cat < ping | grep m só retorno o ultimo comando
 }
 
@@ -104,16 +114,16 @@ int validate_tokens(t_token_list *tokens_lst)
 
 	token = tokens_lst->head;
 	i = 0;
-	error = 0;
+	error = FALSE;
 	while (i < tokens_lst->count)
 	{
 		check_tokens(token, i, &error);
 		// if (type == SEMICOLON && token->next)
 		// 	check_tokens(token, i, &error);
-		if (token->next)
-			token = token->next;
 		if (error != FALSE)
 			break;
+		if (token->next)
+			token = token->next;
 		i++;
 	}
 	return (error);
@@ -149,8 +159,8 @@ char	*ft_strappend(char *s1, char *s2)
 	z = 0;
 	while (s2[z])
 		new_string[i++] = s2[z++];
-	new_string[i] = '\0';
 	free(s1);
+	new_string[i] = '\0';
 	return (new_string);
 }
 
@@ -158,18 +168,16 @@ t_link_cmds	*create_cmds(t_token_list *tokens_lst)
 {
 	t_token	*token;
 	int current_type;
-	int cmd_type;
 	t_link_cmds	*cmds;
 	char *full_cmd;
 	char *cmd;
 
 	token = tokens_lst->head;
-	current_type = token->type;
 	cmds = create_chained_cmd();
+	current_type = token->type;
 	while (token)
 	{
 		full_cmd = '\0';
-		current_type = token->type;
 		cmd = token->token;
 		while (token && current_type == token->type)
 		{
@@ -180,11 +188,9 @@ t_link_cmds	*create_cmds(t_token_list *tokens_lst)
 				break;
 			// i++;
 		}
-		cmd_type = current_type;
-		if (current_type == FILE)
-			cmd_type = token->prev->type;
-		add_chained_cmd(cmds, full_cmd, cmd, cmd_type);
+		add_chained_cmd(cmds, full_cmd, cmd, current_type);
 		token = token->next;
+		current_type = token->type;
 	}
 	return (cmds);
 }
@@ -218,9 +224,9 @@ int chained_cmds_size(t_link_cmds *chained_cmds)
 	return (size);
 }
 
-static void	execute_cmd(t_link_cmds	*cmd)
+void	exec_cmd(t_link_cmds	*cmd)
 {
-
+	ft_printf("exec %s\n", cmd->full_cmd);
 }
 
 void bolinha(t_link_cmds	*cmd)

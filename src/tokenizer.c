@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 08:51:20 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/09 17:32:25 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/09 17:34:31 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -269,7 +269,7 @@ static int	define_operator(char *token)
 		if (!(ft_strncmp(token, ">", 1)))
 			return (REDIRECT_A);
 		if (!(ft_strncmp(token, "<", 1)))
-			return (INPUT_A);
+			return (HEREDOC);
 	}
 	if (!(ft_strncmp(token, ">", 1)))
 		return (REDIRECT);

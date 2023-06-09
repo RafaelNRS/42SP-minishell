@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/09 17:32:03 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/09 18:04:09 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@
 // after symbols
 # define FILE 96		// after >
 # define FILE_A 97		// after >>
-# define INPUT_FILE 99	// after <
-# define END_OF_FILE 99			// after <<
+# define INPUT_FILE 98	// after <
+# define END_OF_FILE 99	// after <<
 
 // generic
 # define STRING 100
