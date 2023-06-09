@@ -6,81 +6,13 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/09 16:00:47 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/09 17:29:11 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 t_msh g_msh;
-
-// void create_pipe(int *old_pipe_in)
-// {
-// 	int	new_pipe[2];
-
-// 	dup2(*old_pipe_in, STDIN_FILENO); // vai entrar pelo old_pipe
-// 	if (*old_pipe_in != 0)
-// 		close(*old_pipe_in); // fecho se abri
-// 	pipe(new_pipe);
-// 	dup2(new_pipe[OUT], STDOUT_FILENO); // new pipe é o out
-// 	close(new_pipe[OUT]);
-// 	*old_pipe_in = dup(new_pipe[IN]); // troco o old pipe in  pelo new pipe
-// 	close(new_pipe[IN]);
-// }
-
-// void execute_commands(t_token_list *tokens)
-// {
-// 	// int fd[2];
-// 	int first;
-// 	t_token *current;
-// 	int current_type;
-// 	// int response;
-// 	char *command;
-// 	// int old_pipe_in;
-
-// 	// old_pipe_in = 0; // preciso?
-
-// 	// check if has ;
-
-// 		// 	else
-// 		// 	{
-// 		// 		if (!current->next->next)
-// 		// 			ft_printf("syntax error near unexpected token `newline");
-// 		// 		else
-// 		// 			ft_printf("syntax error near unexpected token `%d", current->next->next);
-// 		// 		break;
-// 		// 	}
-// 		// }
-// 		// else if (current->type == REDIRECT || current->type == REDIRECT_A)
-// 		// {
-// 		// 	if (current->next && current->next->type == FILE)
-// 		// 	{
-// 		// 		if (current->type == REDIRECT) // >
-// 		// 			redirect_output(current->next);
-// 		// 		else if (current->type == REDIRECT_A) // >>
-// 		// 			append_output(current->next);
-// 		// 		if (current->next->next)
-// 		// 		{
-// 		// 			current = current->next->next;
-// 		// 			current_type = current->type;
-// 		// 			continue;
-// 		// 		}
-// 		// 		break;
-// 		// 	}
-// 		// 	else
-// 		// 	{
-// 		// 		if (!current->next)
-// 		// 			ft_printf("syntax error near unexpected token `newline");
-// 		// 		else
-// 		// 			ft_printf("syntax error near unexpected token `%d", current->next);
-// 		// 		break;
-// 		// 	}
-// 		// }
-
-// 		// free(command);
-// 		// first = FALSE;
-// 	}
-// }
 
 static void sig_handler(int signal)
 {
@@ -153,18 +85,15 @@ void check_tokens(t_token	*token, int i, int *error)
 		else if (token->prev->type != STRING && token->prev->type != FILE)
 			*error = 2; // ft_printf("syntax error near unexpected token `|'")
 	}
-	else if (type == REDIRECT || type == REDIRECT_A)
-	{
-		if (token->next && token->next->type != FILE)
-			*error = 2; // ft_printf("syntax error near unexpected token `%d'", token->token)
-	}
-	else if (type == INPUT || type == INPUT_A)
+	else if (type == REDIRECT || type == REDIRECT_A ||
+		type == INPUT || type == INPUT_A)
 	{
 		if (!token->next)
-			*error = 1;	  // ft_printf("%d: No such file or directory", token->token);
+			*error = 1;	  // ft_printf("parse error near `\n'");
 		else if (token->next->type != FILE)
-			*error = 2; // ft_printf("syntax error near unexpected token `%d'", token->token)
+			*error = 1; // ft_printf("parse error near `%d'", token->token)
 	}
+	// cat < ping | grep m > test | cat < ping | grep m só retorno o ultimo comando
 }
 
 int validate_tokens(t_token_list *tokens_lst)
@@ -225,11 +154,11 @@ char	*ft_strappend(char *s1, char *s2)
 	return (new_string);
 }
 
-// t_link_cmds *create_cmds(t_token_list *tokens_lst)
-void create_cmds(t_token_list *tokens_lst)
+t_link_cmds	*create_cmds(t_token_list *tokens_lst)
 {
 	t_token	*token;
 	int current_type;
+	int cmd_type;
 	t_link_cmds	*cmds;
 	char *full_cmd;
 	char *cmd;
@@ -251,22 +180,101 @@ void create_cmds(t_token_list *tokens_lst)
 				break;
 			// i++;
 		}
+		cmd_type = current_type;
+		if (current_type == FILE)
+			cmd_type = token->prev->type;
+		add_chained_cmd(cmds, full_cmd, cmd, cmd_type);
 		token = token->next;
-		add_chained_cmd(cmds, full_cmd, cmd, current_type);
 	}
+	return (cmds);
+}
+
+void create_pipe(int *old_pipe_in)
+{
+	int	new_pipe[2];
+
+	dup2(*old_pipe_in, STDIN_FILENO); // vai entrar pelo old_pipe
+	if (*old_pipe_in != 0)
+		close(*old_pipe_in);
+	pipe(new_pipe);
+	dup2(new_pipe[OUT], STDOUT_FILENO); // new pipe é o out
+	close(new_pipe[OUT]);
+	*old_pipe_in = dup(new_pipe[IN]); // troco o old pipe in pelo new pipe
+	close(new_pipe[IN]);
+}
+
+int chained_cmds_size(t_link_cmds *chained_cmds)
+{
+	int size;
 	t_link_cmds	*tmp;
-	tmp = cmds;
+
+	tmp = chained_cmds;
+	size = 0;
 	while (tmp)
 	{
-		ft_printf("cmds %s, %s %d\n", tmp->full_cmd, tmp->cmd, tmp->type);
+		size++;
 		tmp = tmp->next;
 	}
+	return (size);
+}
+
+static void	execute_cmd(t_link_cmds	*cmd)
+{
+
+}
+
+void bolinha(t_link_cmds	*cmd)
+{
+	// ft_printf("cmds %s, %d\n", cmd->full_cmd, cmd->type);
+
+// se tiver um = deveria setar uma variavel
+
+	if (cmd->type == STRING)
+		exec_cmd(cmd);
+		// checar se é builtin ou comando e executar
+	// else if (cmd->type == REDIRECT)
+	// else if (cmd->type == REDIRECT_A)
+	// else if (cmd->type == INPUT_A)
+	// else if (cmd->type == INPUT)
+
+}
+
+void execute_cmds(t_link_cmds *chained_cmds)
+{
+	int size;
+	t_link_cmds	*current;
+	int old_pipe_in;
+
+	size = chained_cmds_size(chained_cmds);
+	// ft_printf("%d", size);
+
+	old_pipe_in = 0;
+	int		save_fd[2];
+	save_fd[IN] = dup(STDIN_FILENO);
+	save_fd[OUT] = dup(STDOUT_FILENO);
+
+	// current = chained_cmds;
+	if (size > 1)
+		create_pipe(old_pipe_in);
+
+	while(chained_cmds)
+	{
+		// tratar direcionamento in e out;
+		bolinha(chained_cmds);
+		current = current->next;
+		dup2(save_fd[IN], STDIN_FILENO);
+		close(save_fd[IN]);
+		dup2(save_fd[OUT], STDOUT_FILENO);
+		close(save_fd[OUT]);
+	}
+	// free(chained_cmds);
 }
 
 // int syntax_analysis(t_cmd_list **cmds_list, t_token_list *tokens_lst)
 int syntax_analysis(t_token_list *tokens_lst)
 {
 	int error;
+	t_link_cmds	*chained_cmds;
 
 	error = validate_tokens(tokens_lst);
 	if (error != 0)
@@ -276,7 +284,10 @@ int syntax_analysis(t_token_list *tokens_lst)
 	// i = 0;
 	// t_link_cmds *cmds;
 
-	create_cmds(tokens_lst);
+	chained_cmds = create_cmds(tokens_lst);
+
+	execute_cmds(chained_cmds);
+	// free(chained_cmds)
 	return (0);
 
 	// full_comand
