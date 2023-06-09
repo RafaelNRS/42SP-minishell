@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/09 15:23:54 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/09 16:01:27 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,18 +34,8 @@
 # define INPUT_A 93
 # define INPUT 94
 # define FILE 95
-# define COMMAND 96
+# define STRING 96
 # define SEMICOLON 97
-
-// bolinha env - nao é buildin deveria ser string?
-// echo $? < bolinha - echo $? deveria ser input e nao builtin?
-// echo $? > bolinha - echo $? deveria ser output e nao builtin?
-// 				  - bolinha deveria ser file?
-// a < b 
-// a = string
-// < = input
-// b = file - deveria ser string
-// a contando ultimo espaço como mais um caracter
 
 # define IN 0
 # define OUT 1

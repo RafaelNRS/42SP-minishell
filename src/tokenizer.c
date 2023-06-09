@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 08:51:20 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/09 15:24:10 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/09 15:55:47 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -286,7 +286,7 @@ static void	define_type(t_token **token)
 		prev_type = (*token)->prev->type;
 	if (is_builtin((*token)->token) && prev_type != REDIRECT && \
 		prev_type != REDIRECT_A && prev_type != INPUT && prev_type != INPUT_A)
-		(*token)->type = COMMAND;
+		(*token)->type = STRING;
 	else if (is_operator((*token)->token[0]))
 		(*token)->type = define_operator((*token)->token);
 	else if (is_semi((*token)->token[0]))
@@ -295,7 +295,7 @@ static void	define_type(t_token **token)
 		|| prev_type == INPUT)
 		(*token)->type = FILE;
 	else
-		(*token)->type = COMMAND;
+		(*token)->type = STRING;
 }
 
 void	ft_tokenize(char *p, t_token_list **list, bool quotes[2], char *t_st)

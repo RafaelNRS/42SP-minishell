@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/09 15:24:53 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/09 16:00:47 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,7 +150,7 @@ void check_tokens(t_token	*token, int i, int *error)
 	{
 		if (i == 0 || !token->prev)
 			*error = 2; // ft_printf("syntax error near unexpected token `|'")
-		else if (token->prev->type != COMMAND && token->prev->type != BUILTIN)
+		else if (token->prev->type != STRING && token->prev->type != FILE)
 			*error = 2; // ft_printf("syntax error near unexpected token `|'")
 	}
 	else if (type == REDIRECT || type == REDIRECT_A)
@@ -158,11 +158,11 @@ void check_tokens(t_token	*token, int i, int *error)
 		if (token->next && token->next->type != FILE)
 			*error = 2; // ft_printf("syntax error near unexpected token `%d'", token->token)
 	}
-	else if (type == INPUT || type == INPUT_A) //comportamento está certo?
+	else if (type == INPUT || type == INPUT_A)
 	{
-		if (!token->prev)
+		if (!token->next)
 			*error = 1;	  // ft_printf("%d: No such file or directory", token->token);
-		else if (token->prev->type != FILE)
+		else if (token->next->type != FILE)
 			*error = 2; // ft_printf("syntax error near unexpected token `%d'", token->token)
 	}
 }
