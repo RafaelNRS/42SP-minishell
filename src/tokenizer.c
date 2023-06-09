@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 08:51:20 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/09 15:55:47 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/09 17:32:25 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,20 +43,20 @@ bool	is_double_operator(char c1, char c2)
 		(c1 == '>' && c2 == '>'));
 }
 
-static bool	is_builtin(char *token)
-{
-	if (!token)
-		return (false);
-	if (!(ft_strncmp(token, "echo\0", 5)) || !(ft_strncmp(token, "cd\0", 3)))
-		return (true);
-	if (!(ft_strncmp(token, "pwd", 3)) || !(ft_strncmp(token, "export", 6)))
-		return (true);
-	if (!(ft_strncmp(token, "unset", 5)) || !(ft_strncmp(token, "env", 3)))
-		return (true);
-	if (!(ft_strncmp(token, "exit", 4)))
-		return (true);
-	return (false);
-}
+// static bool	is_builtin(char *token)
+// {
+// 	if (!token)
+// 		return (false);
+// 	if (!(ft_strncmp(token, "echo\0", 5)) || !(ft_strncmp(token, "cd\0", 3)))
+// 		return (true);
+// 	if (!(ft_strncmp(token, "pwd", 3)) || !(ft_strncmp(token, "export", 6)))
+// 		return (true);
+// 	if (!(ft_strncmp(token, "unset", 5)) || !(ft_strncmp(token, "env", 3)))
+// 		return (true);
+// 	if (!(ft_strncmp(token, "exit", 4)))
+// 		return (true);
+// 	return (false);
+// }
 
 static void	shift_characters_right(char *line, int start, int len)
 {
@@ -284,16 +284,18 @@ static void	define_type(t_token **token)
 
 	if ((*token)->prev && (*token)->prev->type)
 		prev_type = (*token)->prev->type;
-	if (is_builtin((*token)->token) && prev_type != REDIRECT && \
-		prev_type != REDIRECT_A && prev_type != INPUT && prev_type != INPUT_A)
-		(*token)->type = STRING;
-	else if (is_operator((*token)->token[0]))
+	if (is_operator((*token)->token[0]))
 		(*token)->type = define_operator((*token)->token);
 	else if (is_semi((*token)->token[0]))
 		(*token)->type = SEMICOLON;
-	else if (prev_type == REDIRECT || prev_type == REDIRECT_A \
-		|| prev_type == INPUT)
+	else if (prev_type == REDIRECT)
 		(*token)->type = FILE;
+	else if (prev_type == REDIRECT_A)
+		(*token)->type = FILE_A;
+	else if (prev_type == INPUT)
+		(*token)->type = INPUT_FILE;
+	else if (prev_type == HEREDOC)
+		(*token)->type = END_OF_FILE;
 	else
 		(*token)->type = STRING;
 }

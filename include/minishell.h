@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/09 16:01:27 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/09 17:32:03 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,22 @@
 # define MAX_TOKENS 256
 # define TABLE_DEFAULT_SIZE 50
 
-# define PIPE 90
-# define REDIRECT 91
-# define REDIRECT_A 92
-# define INPUT_A 93
-# define INPUT 94
-# define FILE 95
-# define STRING 96
-# define SEMICOLON 97
+// symbols
+# define PIPE 90		// |
+# define REDIRECT 91	// >
+# define REDIRECT_A 92	// >>
+# define HEREDOC 93		// <<
+# define INPUT 94		// <
+# define SEMICOLON 95	// ;
+
+// after symbols
+# define FILE 96		// after >
+# define FILE_A 97		// after >>
+# define INPUT_FILE 99	// after <
+# define END_OF_FILE 99			// after <<
+
+// generic
+# define STRING 100
 
 # define IN 0
 # define OUT 1
