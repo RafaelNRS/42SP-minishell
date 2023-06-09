@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/10 20:49:42 by ranascim          #+#    #+#             */
-/*   Updated: 2023/03/21 08:38:25 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/09 13:32:05 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,5 +127,9 @@ int		ft_print_d(int d);
 int		ft_put_base(unsigned long n, unsigned long n_base, char *base);
 
 char	*get_next_line(int fd, int buffer_size);
+
+int		ft_isspace(int c);
+
+int		ft_isempty(char *str);
 
 #endif

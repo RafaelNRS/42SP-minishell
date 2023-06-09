@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/06 15:27:10 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/09 12:48:16 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@
 # define INPUT 94
 # define FILE 95
 # define STRING 96
-# define BUILTIN 97
+# define SEMICOLON 97
 
 typedef struct t_item
 {

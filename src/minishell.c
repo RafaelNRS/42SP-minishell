@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/05/22 17:02:32 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/09 13:31:32 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	minishell_loop(void)
 		signal(SIGQUIT, SIG_IGN);
 		signal(SIGINT, sig_handler);
 		read_cmd_line(&cmd_line);
-		if (ft_strlen(cmd_line) == 0)
+		if (ft_strlen(cmd_line) == 0 || ft_isempty(cmd_line))
 		{
 			free(cmd_line);
 			continue ;
@@ -61,6 +61,7 @@ void	minishell_loop(void)
 			printf("Token %s, Type %d\n",token->token, token->type);
 			token = token->next;
 		}
+		printf("Total tokens: %d\n",tokens->count);
 		execute(tokens);
 
     	// free_token_list(tokens);
