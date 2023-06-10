@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/09 18:04:09 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/09 22:33:43 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,9 +88,10 @@ typedef struct s_token_list
 
 typedef struct s_link_cmds
 {
-	char			*full_cmd;
+	char			**full_cmd;
 	char			*cmd;
 	int				type;
+	int				count;
 	struct s_link_cmds	*next;
 }	t_link_cmds;
 
@@ -116,16 +117,16 @@ char		*ht_search(char *key);
 void		free_hash_table(void);
 
 // builtin
-// void		export(char *var);
-// void		unset(char *var);
-// void		env(void);
-// void		pwd(char *cmd);
+void		export(t_link_cmds	*var);
+void		unset(t_link_cmds	*var);
+void		env(void);
+void		pwd(t_link_cmds	*cmd);
 // void		exit_minishell(void);
 // int			args_count(char **args);
-// void		cd(char *cmd);
-// void		echo(char *cmd);
+void		cd(t_link_cmds	*cmd);
+void		echo(t_link_cmds	*cmd);
 
-// void		execute(char *cmd);
+void		execute(t_link_cmds	*cmd);
 // void		expand(char *tokens);
 
 void	ft_tokenize(

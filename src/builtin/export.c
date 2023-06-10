@@ -3,32 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/23 14:01:54 by mariana           #+#    #+#             */
-/*   Updated: 2023/05/22 17:00:00 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/09 22:27:02 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	export(t_token_list *var)
+void	export(t_link_cmds	*var)
 {
-	t_token *current;
+	char **command;
+	int i;
 
-	current = var->head->next;
-	if (var->count == 2)
+	i = 1;
+	command = var->full_cmd;
+	while (command[i])
 	{
-		if (ft_strchr(current->token, '='))
-			add_t_item(current->token);
-	}
-	else
-	{
-		while (current != NULL)
-		{
-			if (ft_strchr(current->token, '='))
-				add_t_item(current->token);
-			current = current->next;
-		}
+		if (ft_strchr(command[i], '='))
+			add_t_item(command[i]);
+		i++;
 	}
 }

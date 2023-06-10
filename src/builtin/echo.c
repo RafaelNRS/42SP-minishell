@@ -3,39 +3,41 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 14:09:25 by mariana           #+#    #+#             */
-/*   Updated: 2023/05/22 17:00:00 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/09 22:18:00 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	echo(t_token_list *cmd)
+void	echo(t_link_cmds	*cmd)
 {
 	int	has_flag_n;
-	t_token *current;
+	char	**current;
+	int i;
 
-	current = cmd->head->next;
+	i = 1;
+	current = cmd->full_cmd;
 	if (cmd->count > 1)
 	{
 		has_flag_n = 0;
-		if (ft_strncmp(current->token, "-n", 2) == 0
-			&& ft_strlen(current->token) == 2)
+		if (ft_strncmp(current[i], "-n", 2) == 0
+			&& ft_strlen(current[i]) == 2)
 		{
 			has_flag_n++;
-			current = current->next;
+			i++;
 		}
-		while (current != NULL)
+		while (current[i])
 		{
-			if (current->next == NULL && has_flag_n)
-				ft_printf("%s", current->token);
-			else if (current->next == NULL)
-				ft_printf("%s\n", current->token);
+			if (current[i + 1] == NULL && has_flag_n)
+				ft_printf("%s", current[i]);
+			else if (current[i + 1] == NULL)
+				ft_printf("%s\n", current[i]);
 			else
-				ft_printf("%s ", current->token);
-			current = current->next;
+				ft_printf("%s ", current[i]);
+			i++;
 		}
 	}
 }
