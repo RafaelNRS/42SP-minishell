@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/09 22:33:43 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/12 20:18:00 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ typedef struct s_token_list
 typedef struct s_link_cmds
 {
 	char			**full_cmd;
-	char			*cmd;
+	char			*cmd;//remover
 	int				type;
 	int				count;
 	struct s_link_cmds	*next;
@@ -126,7 +126,7 @@ void		pwd(t_link_cmds	*cmd);
 void		cd(t_link_cmds	*cmd);
 void		echo(t_link_cmds	*cmd);
 
-void		execute(t_link_cmds	*cmd);
+void		execute(t_link_cmds	*cmd, char *envp[]);
 // void		expand(char *tokens);
 
 void	ft_tokenize(

@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/09 22:05:12 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/12 20:36:42 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,6 @@ void check_tokens(t_token	*token, int i, int *error)
 		else if (type == HEREDOC && token->next->type != END_OF_FILE) 	// << 93-99
 			*error = 1; // ft_printf("syntax error near unexpected token `%d'", token->token)
 	}
-
 	// cat < ping | grep m > test | cat < ping | grep m só retorno o ultimo comando
 }
 
@@ -183,11 +182,9 @@ t_link_cmds	*create_cmds(t_token_list *tokens_lst)
 	count = 0;
 	while (token)
 	{
-		// if full_cmd free(full_cmd)?
 		full_cmd = '\0';
-		current_type = token->type;
 		cmd = token->token;
-		while (token && current_type == token->type)
+		while (token->token && current_type == token->type)
 		{
 			full_cmd = ft_strappend(full_cmd, token->token);
 			count++;
@@ -195,28 +192,15 @@ t_link_cmds	*create_cmds(t_token_list *tokens_lst)
 				token = token->next;
 			else
 				break;
-			// i++;
 		}
 		add_chained_cmd(cmds, full_cmd, cmd, current_type, count);
-		count = 0;
 		free(full_cmd);
+		if (token->next)
+			current_type = token->next->type;
 		token = token->next;
+		count = 0;
 	}
 	return (cmds);
-}
-
-void create_pipe(int *old_pipe_in)
-{
-	int	new_pipe[2];
-
-	dup2(*old_pipe_in, STDIN_FILENO); // vai entrar pelo old_pipe
-	if (*old_pipe_in != 0)
-		close(*old_pipe_in);
-	pipe(new_pipe);
-	dup2(new_pipe[OUT], STDOUT_FILENO); // new pipe é o out
-	close(new_pipe[OUT]);
-	*old_pipe_in = dup(new_pipe[IN]); // troco o old pipe in pelo new pipe
-	close(new_pipe[IN]);
 }
 
 int chained_cmds_size(t_link_cmds *chained_cmds)
@@ -234,109 +218,65 @@ int chained_cmds_size(t_link_cmds *chained_cmds)
 	return (size);
 }
 
-char	**ft_get_var_path(char *envp[])
+void	save_std_fds(int *std_fd)
 {
-	int	i;
-
-	i = 0;
-	while (!ft_strnstr(envp[i], "PATH", 4))
-		i++;
-	return (ft_split(envp[i] + 5, ':'));
-}
-
-char	*ft_get_path(char *cmd, char *envp[])
-{
-	char	**paths;
-	int		i;
-	char	*path;
-	char	*partial_path;
-
-	paths = ft_get_var_path(envp);
-	i = 0;
-	while (paths[++i])
-	{
-		partial_path = ft_strjoin(paths[i], "/");
-		path = ft_strjoin(partial_path, cmd);
-		free(partial_path);
-		if (!access(path, F_OK))
-		{
-			// ft_free_array(paths);
-			return (path);
-		}
-		free(path);
-	}
-	// ft_free_array(paths);
-	return (NULL);
-}
-
-void	exec_cmd(t_link_cmds	*cmd, char *envp[])
-{
-	char	*path;
-
-	path = ft_get_path(cmd->cmd, envp);
-	if (!path)
-	{
-		// ft_free_array(array_cmd);
-		write(2, "command not found: ", 19);
-		// write(2, cmd, ft_strlen(cmd));
-		// write(2, "\n", 1);
-		// exit(0);
-	}
-	// int i = 0;
-	// while (array_cmd[i++])
-	execve(cmd->cmd, cmd->full_cmd, envp);
-}
-
-void bolinha(t_link_cmds	*cmd, char *envp[])
-{
-	ft_printf("cmds %s, %d, %d, %s\n", cmd->full_cmd[0], cmd->type, cmd->count, envp[0]);
-	// ft_printf("env %s,\n", envp[0]);
-
-// se tiver um = deveria setar uma variavel
-
-	if (cmd->type == STRING)
-		execute(cmd);
-		// checar se é builtin ou comando e executar
-	// else if (cmd->type == REDIRECT)
-	// else if (cmd->type == REDIRECT_A)
-	// else if (cmd->type == INPUT_A)
-	// else if (cmd->type == INPUT)
-
-}
-
-void	save_std_fds(int *save_fd)
-{
-	save_fd[IN] = dup(STDIN_FILENO);
-	save_fd[OUT] = dup(STDOUT_FILENO);
+	std_fd[IN] = dup(STDIN_FILENO);
+	std_fd[OUT] = dup(STDOUT_FILENO);
+	// close(std_fd[IN]);
+	// close(std_fd[OUT]);
 }
 
 void reset_std_fds(int *fd)
 {
 	dup2(fd[IN], STDIN_FILENO);
-	close(fd[IN]);
+	// close(fd[IN]);
 	dup2(fd[OUT], STDOUT_FILENO);
-	close(fd[OUT]);
+	// close(fd[OUT]);
+}
+
+void create_pipe(int *old_pipe_in)
+{
+	int	new_pipe[2];
+
+	dup2(*old_pipe_in, STDIN_FILENO); // vai entrar pelo old_pipe
+	if (*old_pipe_in != IN)
+		close(*old_pipe_in);
+	pipe(new_pipe);
+	dup2(new_pipe[OUT], STDOUT_FILENO); // new pipe é o out
+	close(new_pipe[OUT]);
+	*old_pipe_in = dup(new_pipe[IN]); // troco o old pipe in pelo new pipe
+	close(new_pipe[IN]);
 }
 
 void execute_cmds(t_link_cmds *chained_cmds, char *envp[])
 {
-	t_link_cmds	*current;
-	// int old_pipe_in;
-	// int		std_fd[2];
+	t_link_cmds	*current_cmd;
+	int old_pipe_in;
+	int		std_fd[2];
 
-	// old_pipe_in = IN;
-	current = chained_cmds;
-	while(current)
+	current_cmd = chained_cmds;
+	old_pipe_in = IN;
+	while(current_cmd)
 	{
-	// 	// save_std_fds(std_fd);
-	// 	// if (chained_cmds_size(current) > 1)
-	// 	// 	create_pipe(&old_pipe_in);
-	// // // 	// tratar direcionamento in e out;
-		bolinha(current, envp);
-		current = current->next;
+		// se for in
+		// se for out
+
+		// if (chained_cmds_size(current_cmd) == 1)
+		// 	execute(chained_cmds, envp);
+		// else
+		// {
+		save_std_fds(std_fd);
+		create_pipe(&old_pipe_in);
+		if (!current_cmd->next)
+			reset_std_fds(std_fd);
+		execute(chained_cmds, envp);
+		// }
+		current_cmd = current_cmd->next;
+		// if (old_pipe_in != 0)
+		// 	close(old_pipe_in);
 	}
-	// reset_std_fds(std_fd);
-	// close(old_pipe_in);
+	if (old_pipe_in != 0)
+		close(old_pipe_in);
 	// free(chained_cmds);
 }
 
