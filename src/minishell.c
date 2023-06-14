@@ -52,6 +52,7 @@ t_link_cmds *create_chained_cmd(void)
 void add_chained_cmd(t_link_cmds *list, char *full_cmd, char *cmd, int type, int count)
 {
 	t_link_cmds *new_node;
+	t_link_cmds *tmp;
 	char	**arr_full_cmd;
 
 	arr_full_cmd =  ft_split(full_cmd, ' ');
@@ -65,7 +66,11 @@ void add_chained_cmd(t_link_cmds *list, char *full_cmd, char *cmd, int type, int
 			new_node->type = type;
 			new_node->next = NULL;
 			new_node->count = count;
-			list->next = new_node;
+
+			tmp = list;
+			while (tmp->next)
+				tmp = list->next;
+			tmp->next = new_node;
 		}
 	}
 	else
