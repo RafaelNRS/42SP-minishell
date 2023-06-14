@@ -274,7 +274,7 @@ void execute_cmds(t_link_cmds *chained_cmds, char *envp[])
 		create_pipe(&old_pipe_in);
 		if (!current_cmd->next)
 			reset_std_fds(std_fd);
-		execute(chained_cmds, envp);
+		execute(current_cmd, envp);
 		// }
 		current_cmd = current_cmd->next;
 		// if (old_pipe_in != 0)
