@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/12 20:18:00 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/14 18:09:09 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,10 +123,10 @@ void		env(void);
 void		pwd(t_link_cmds	*cmd);
 // void		exit_minishell(void);
 // int			args_count(char **args);
-void		cd(t_link_cmds	*cmd);
+// void		cd(t_link_cmds	*cmd);
 void		echo(t_link_cmds	*cmd);
 
-void		execute(t_link_cmds	*cmd, char *envp[]);
+void execute(t_link_cmds *cmd, char *envp[], int *pipe_arr, bool pipe_flag);
 // void		expand(char *tokens);
 
 void	ft_tokenize(

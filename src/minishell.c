@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/14 18:27:53 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/14 18:33:08 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -263,37 +263,21 @@ void execute_cmds(t_link_cmds *chained_cmds, char *envp[])
 	current_cmd = chained_cmds;
 	//old_pipe_in = IN;
 	int saved_stdin = dup(STDIN_FILENO);
+	// int saved_stdout = dup(STDOUT_FILENO);
 	while(current_cmd && current_cmd->next)
 	{
+			// fprintf(stderr, "current_cmd: %s\n", current_cmd->cmd);
 			pipe(pipe_arr);
-
             execute(current_cmd, envp, pipe_arr, TRUE);
-
 			// se for in
 			// se for out
 
-			// if (chained_cmds_size(current_cmd) == 1)
-			// 	execute(chained_cmds, envp);
-			// else
-			// {
-
-				
-			// save_std_fds(std_fd);
-			// create_pipe(&old_pipe_in);
-			// if (!current_cmd->next)
-			// 	reset_std_fds(std_fd);
-			// execute(current_cmd, envp);
-			// }
 			current_cmd = current_cmd->next;
-			// if (old_pipe_in != 0)
-			// 	close(old_pipe_in);
 	}
-	fprintf(stderr, "current_cmd: %s\n", current_cmd->cmd);
+	// fprintf(stderr, "current_cmd: %s\n", current_cmd->cmd);
 	execute(current_cmd, envp, pipe_arr, FALSE);
 	dup2(saved_stdin, STDIN_FILENO);
-	// if (old_pipe_in != 0)
-	// 	close(old_pipe_in);
-	// free(chained_cmds);
+	// dup2(saved_stdout, STDOUT_FILENO);
 }
 
 int syntax_analysis(t_token_list *tokens_lst, char *envp[])
@@ -334,24 +318,7 @@ void minishell_loop(char *envp[])
 		tokens = ft_init_tokenize(cmd_line);
 		if (!tokens)
 			return;
-
-		// token = tokens->head;
-		// while (token != NULL)
-		// {
-		// 	printf("-> %s, Type %d\n", token->token, token->type);
-		// 	token = token->next;
-		// }
 		syntax_analysis(tokens, envp);
-		// if (syntax_analysis_error != FALSE)
-		// 	ft_printf("deu erro!!!");
-
-		// printf("Total tokens: %d\n",tokens->count);
-
-		// free_token_list(tokens);
-		// expand(tokens);
-		// free(tokens);
-		// if (cmd_line)
-		// 	free(cmd_line);
 	}
 }
 

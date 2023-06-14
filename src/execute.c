@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 16:57:01 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/14 18:25:55 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/14 18:44:55 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,6 @@ void	exec_cmd(t_link_cmds	*cmd, char *envp[], int *pipe_arr, bool pipe_flag)
 			dup2(pipe_arr[1], STDOUT_FILENO);
 			close(pipe_arr[0]);
 			close(pipe_arr[1]);
-			
 			path = ft_get_path(cmd->cmd, envp);
 			if (!path)
 			{
@@ -73,6 +72,7 @@ void	exec_cmd(t_link_cmds	*cmd, char *envp[], int *pipe_arr, bool pipe_flag)
 			}
 			execve(path, cmd->full_cmd, envp);
 		}
+		waitpid(pid, &status, 0);
 		dup2(pipe_arr[0], STDIN_FILENO);
 		close(pipe_arr[0]);
 		close(pipe_arr[1]);
@@ -84,24 +84,17 @@ void	exec_cmd(t_link_cmds	*cmd, char *envp[], int *pipe_arr, bool pipe_flag)
 			path = ft_get_path(cmd->cmd, envp);
 			if (!path)
 			{
-				// ft_free_array(array_cmd);
 				write(2, "command not found: ", 19);
-				// write(2, cmd, ft_strlen(cmd));
-				// write(2, "\n", 1);
-				// exit(1);
 			}
 			execve(path, cmd->full_cmd, envp);
 		}
+		waitpid(pid, &status, 0);
 	}
-	
-	waitpid(pid, &status, 0);
 	// if (WIFEXITED(status)) error_status = WEXITSTATUS(status);
-
 }
 
 void	execute(t_link_cmds	*cmd, char *envp[], int *pipe_arr, bool pipe_flag)
 {
-	// ft_printf("%s, %s,  %s\n", cmd->full_cmd[0], cmd->cmd, envp[0]);
 	if (cmd->type == STRING)
 	{
 		if (ft_strncmp(cmd->cmd, "export\0", 7) == 0)
@@ -151,9 +144,8 @@ void	execute(t_link_cmds	*cmd, char *envp[], int *pipe_arr, bool pipe_flag)
 		// }
 // Search and launch the right executable (based on the PATH variable 
 // or using a relative or an absolute path).
-// < should redirect input.
-// ◦ > should redirect output.
+
 // ◦ << should be given a delimiter, then read the input until a line containing the
 // delimiter is seen. However, it doesn’t have to update the history!
-// ◦ >> should redirect output in append mode.
+
 }
