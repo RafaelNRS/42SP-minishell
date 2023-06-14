@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/12 20:36:42 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/14 17:15:42 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,7 +187,7 @@ t_link_cmds	*create_cmds(t_token_list *tokens_lst)
 	count = 0;
 	while (token)
 	{
-		full_cmd = '\0';
+		full_cmd = NULL;
 		cmd = token->token;
 		while (token->token && current_type == token->type)
 		{
@@ -256,32 +256,44 @@ void create_pipe(int *old_pipe_in)
 void execute_cmds(t_link_cmds *chained_cmds, char *envp[])
 {
 	t_link_cmds	*current_cmd;
-	int old_pipe_in;
-	int		std_fd[2];
-
+	//int old_pipe_in;
+	// int		std_fd[2];
+	int		pipe_arr[2];
+	
 	current_cmd = chained_cmds;
-	old_pipe_in = IN;
-	while(current_cmd)
+	//old_pipe_in = IN;
+	int saved_stdin = dup(STDIN_FILENO);
+	while(current_cmd && current_cmd->next)
 	{
-		// se for in
-		// se for out
+			fprintf(stderr, "current_cmd: %s\n", current_cmd->cmd);
+			pipe(pipe_arr);
 
-		// if (chained_cmds_size(current_cmd) == 1)
-		// 	execute(chained_cmds, envp);
-		// else
-		// {
-		save_std_fds(std_fd);
-		create_pipe(&old_pipe_in);
-		if (!current_cmd->next)
-			reset_std_fds(std_fd);
-		execute(current_cmd, envp);
-		// }
-		current_cmd = current_cmd->next;
-		// if (old_pipe_in != 0)
-		// 	close(old_pipe_in);
+            execute(current_cmd, envp, pipe_arr, TRUE);
+
+			// se for in
+			// se for out
+
+			// if (chained_cmds_size(current_cmd) == 1)
+			// 	execute(chained_cmds, envp);
+			// else
+			// {
+
+				
+			// save_std_fds(std_fd);
+			// create_pipe(&old_pipe_in);
+			// if (!current_cmd->next)
+			// 	reset_std_fds(std_fd);
+			// execute(current_cmd, envp);
+			// }
+			current_cmd = current_cmd->next;
+			// if (old_pipe_in != 0)
+			// 	close(old_pipe_in);
 	}
-	if (old_pipe_in != 0)
-		close(old_pipe_in);
+	fprintf(stderr, "current_cmd: %s\n", current_cmd->cmd);
+	execute(current_cmd, envp, pipe_arr, FALSE);
+	dup2(saved_stdin, STDIN_FILENO);
+	// if (old_pipe_in != 0)
+	// 	close(old_pipe_in);
 	// free(chained_cmds);
 }
 

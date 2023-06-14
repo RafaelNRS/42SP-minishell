@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/12 20:18:00 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/14 17:13:30 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ void		pwd(t_link_cmds	*cmd);
 void		cd(t_link_cmds	*cmd);
 void		echo(t_link_cmds	*cmd);
 
-void		execute(t_link_cmds	*cmd, char *envp[]);
+void		execute(t_link_cmds	*cmd, char *envp[], int *pipe_arr, bool pipe_flag);
 // void		expand(char *tokens);
 
 void	ft_tokenize(

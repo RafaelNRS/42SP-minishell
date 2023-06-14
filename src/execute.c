@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 16:57:01 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/13 19:11:28 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/14 17:13:36 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,32 +47,59 @@ char	*ft_get_path(char *cmd, char *envp[])
 	return (NULL);
 }
 
-void	exec_cmd(t_link_cmds	*cmd, char *envp[])
+void	exec_cmd(t_link_cmds	*cmd, char *envp[], int *pipe_arr, bool pipe_flag)
 {
 	char	*path;
 	int		pid;
 	int		status;
 
 	pid = fork();
-	if (pid == 0)
+	if (pipe_flag)
 	{
-		path = ft_get_path(cmd->cmd, envp);
-		if (!path)
+		if (pid == 0)
 		{
-			// ft_free_array(array_cmd);
-			write(2, "command not found: ", 19);
-			// write(2, cmd, ft_strlen(cmd));
-			// write(2, "\n", 1);
-			// exit(1);
+			dup2(pipe_arr[1], STDOUT_FILENO);
+			close(pipe_arr[0]);
+			close(pipe_arr[1]);
+			
+			path = ft_get_path(cmd->cmd, envp);
+			if (!path)
+			{
+				// ft_free_array(array_cmd);
+				write(2, "command not found: ", 19);
+				// write(2, cmd, ft_strlen(cmd));
+				// write(2, "\n", 1);
+				// exit(1);
+			}
+			execve(path, cmd->full_cmd, envp);
 		}
-		execve(path, cmd->full_cmd, envp);
+		dup2(pipe_arr[0], STDIN_FILENO);
+		close(pipe_arr[0]);
+		close(pipe_arr[1]);
 	}
+	else
+	{
+		if (pid == 0)
+		{
+			path = ft_get_path(cmd->cmd, envp);
+			if (!path)
+			{
+				// ft_free_array(array_cmd);
+				write(2, "command not found: ", 19);
+				// write(2, cmd, ft_strlen(cmd));
+				// write(2, "\n", 1);
+				// exit(1);
+			}
+			execve(path, cmd->full_cmd, envp);
+		}
+	}
+	
 	waitpid(pid, &status, 0);
 	// if (WIFEXITED(status)) error_status = WEXITSTATUS(status);
 
 }
 
-void	execute(t_link_cmds	*cmd, char *envp[])
+void	execute(t_link_cmds	*cmd, char *envp[], int *pipe_arr, bool pipe_flag)
 {
 	// ft_printf("%s, %s,  %s\n", cmd->full_cmd[0], cmd->cmd, envp[0]);
 	if (cmd->type == STRING)
@@ -92,7 +119,7 @@ void	execute(t_link_cmds	*cmd, char *envp[])
 		else if (ft_strncmp(cmd->cmd, "cd\0", 3) == 0)
 			cd(cmd);
 		else
-			exec_cmd(cmd, envp);
+			exec_cmd(cmd, envp, pipe_arr, pipe_flag);
 	}
 
 		// achar comando, validar se tem acesso, p executar
