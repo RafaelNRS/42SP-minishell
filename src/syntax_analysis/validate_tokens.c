@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 12:40:00 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/17 12:41:56 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/17 16:23:44 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void	validate_tokens(t_token_list *tokens_lst)
 	while (i < tokens_lst->count)
 	{
 		check_tokens(token, i);
-		// if (type == SEMICOLON && token->next)
+		// TODO SEMICOLON
 		if (token->next)
 			token = token->next;
 		i++;
