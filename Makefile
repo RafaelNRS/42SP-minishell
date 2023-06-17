@@ -19,7 +19,11 @@ SRC_CLIENT_PATH	= ./src/minishell.c ./src/tokenizer.c \
 									./src/builtin/args_count.c ./src/builtin/env.c ./src/builtin/exit_minishell.c \
 									./src/builtin/unset.c ./src/builtin/export.c ./src/builtin/pwd.c ./src/builtin/cd.c \
 									./src/builtin/echo.c \
-									./src/msh_error.c ./src/execute.c
+									./src/msh_error.c ./src/execute.c \
+									./src/syntatic_analisis/create_cmd.c \
+									./src/syntatic_analisis/ft_strappend.c \
+									./src/syntatic_analisis/syntatic_analisis.c \
+									./src/syntatic_analisis/validate_tokens.c
 
 BIN						= ./bin/
 BINARY_OUT_PROJ		= ./bin/minishell
