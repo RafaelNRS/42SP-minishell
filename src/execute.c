@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 16:57:01 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/14 18:44:55 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/17 10:19:59 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,115 +37,69 @@ char	*ft_get_path(char *cmd, char *envp[])
 		path = ft_strjoin(partial_path, cmd);
 		free(partial_path);
 		if (!access(path, F_OK))
-		{
-			// ft_free_array(paths);
 			return (path);
-		}
 		free(path);
 	}
-	// ft_free_array(paths);
 	return (NULL);
 }
 
-void	exec_cmd(t_link_cmds	*cmd, char *envp[], int *pipe_arr, bool pipe_flag)
+void	exec_func(t_link_cmds	*cmd, char *envp[])
 {
 	char	*path;
+
+	path = ft_get_path(cmd->full_cmd[0], envp);
+	if (!path)
+		write(2, "command not found: ", 19);
+	execve(path, cmd->full_cmd, envp);
+}
+
+void	exec_cmd(t_link_cmds	*cmd, char *envp[], int *fd, bool flag)
+{
 	int		pid;
 	int		status;
 
 	pid = fork();
-	if (pipe_flag)
+	if (flag)
 	{
 		if (pid == 0)
 		{
-			dup2(pipe_arr[1], STDOUT_FILENO);
-			close(pipe_arr[0]);
-			close(pipe_arr[1]);
-			path = ft_get_path(cmd->cmd, envp);
-			if (!path)
-			{
-				// ft_free_array(array_cmd);
-				write(2, "command not found: ", 19);
-				// write(2, cmd, ft_strlen(cmd));
-				// write(2, "\n", 1);
-				// exit(1);
-			}
-			execve(path, cmd->full_cmd, envp);
+			dup2(fd[1], STDOUT_FILENO);
+			close(fd[0]);
+			close(fd[1]);
+			exec_func(cmd, envp);
 		}
 		waitpid(pid, &status, 0);
-		dup2(pipe_arr[0], STDIN_FILENO);
-		close(pipe_arr[0]);
-		close(pipe_arr[1]);
+		dup2(fd[0], STDIN_FILENO);
+		close(fd[0]);
+		close(fd[1]);
 	}
 	else
 	{
 		if (pid == 0)
-		{
-			path = ft_get_path(cmd->cmd, envp);
-			if (!path)
-			{
-				write(2, "command not found: ", 19);
-			}
-			execve(path, cmd->full_cmd, envp);
-		}
+			exec_func(cmd, envp);
 		waitpid(pid, &status, 0);
 	}
-	// if (WIFEXITED(status)) error_status = WEXITSTATUS(status);
 }
 
-void	execute(t_link_cmds	*cmd, char *envp[], int *pipe_arr, bool pipe_flag)
+void	execute(t_link_cmds	*cmd, char *envp[], int *fd, bool flag)
 {
 	if (cmd->type == STRING)
 	{
-		if (ft_strncmp(cmd->cmd, "export\0", 7) == 0)
+		if (ft_strncmp(cmd->full_cmd[0], "export\0", 7) == 0)
 			export(cmd);
-		else if (ft_strncmp(cmd->cmd, "unset\0", 6) == 0)
+		else if (ft_strncmp(cmd->full_cmd[0], "unset\0", 6) == 0)
 			unset(cmd);
-		else if (ft_strncmp(cmd->cmd, "env\0", 4) == 0)
+		else if (ft_strncmp(cmd->full_cmd[0], "env\0", 4) == 0)
 			env();
-		else if (ft_strncmp(cmd->cmd, "pwd\0", 4) == 0)
+		else if (ft_strncmp(cmd->full_cmd[0], "pwd\0", 4) == 0)
 			pwd(cmd);
-		// else if (ft_strncmp(cmd->cmd "exit\0", 5) == 0)
+		// else if (ft_strncmp(cmd->full_cmd[0], "exit\0", 5) == 0)
 		// 	exit_minishell();
-		else if (ft_strncmp(cmd->cmd, "echo\0", 5) == 0)
+		else if (ft_strncmp(cmd->full_cmd[0], "echo\0", 5) == 0)
 			echo(cmd);
-		// else if (ft_strncmp(cmd->cmd, "cd\0", 3) == 0)
+		// else if (ft_strncmp(cmd->full_cmd[0], "cd\0", 3) == 0)
 		// 	cd(cmd);
 		else
-			exec_cmd(cmd, envp, pipe_arr, pipe_flag);
+			exec_cmd(cmd, envp, fd, flag);
 	}
-
-		// achar comando, validar se tem acesso, p executar
-		// static int		check_bins(char **command)
-		// {
-		// 	int				i;
-		// 	char			*bin_path;
-		// 	char			**path;
-		// 	struct stat		f;
-
-		// 	path = ft_strsplit(get_env_var("PATH"), ':');
-		// 	i = -1;
-		// 	while (path && path[++i])
-		// 	{
-		// 		if (ft_strstartswith(command[0], path[i]))
-		// 			bin_path = ft_strdup(command[0]);
-		// 		else
-		// 			bin_path = ft_pathjoin(path[i], command[0]);
-		// 		if (lstat(bin_path, &f) == -1)
-		// 			free(bin_path);
-		// 		else
-		// 		{
-		// 			ft_freestrarr(path);
-		// 			return (is_executable(bin_path, f, command));
-		// 		}
-		// 	}
-		// 	ft_freestrarr(path);
-		// 	return (0);
-		// }
-// Search and launch the right executable (based on the PATH variable 
-// or using a relative or an absolute path).
-
-// ◦ << should be given a delimiter, then read the input until a line containing the
-// delimiter is seen. However, it doesn’t have to update the history!
-
 }

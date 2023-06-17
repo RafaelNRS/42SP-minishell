@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/14 18:09:09 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/14 21:59:42 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,68 +75,67 @@ typedef struct s_token
 {
 	int					type;
 	char				*token;
-	struct s_token	*next;
-	struct s_token	*prev;
+	struct s_token		*next;
+	struct s_token		*prev;
 }	t_token;
 
 typedef struct s_token_list
 {
 	t_token	*head;
 	t_token	*tail;
-	int	count;
+	int		count;
 }	t_token_list;
 
 typedef struct s_link_cmds
 {
-	char			**full_cmd;
-	char			*cmd;//remover
-	int				type;
-	int				count;
+	char				**full_cmd;
+	int					type;
+	int					count;
 	struct s_link_cmds	*next;
 }	t_link_cmds;
 
 typedef struct s_cmd_list
 {
-	t_link_cmds	*chained_cmds;
+	t_link_cmds			*chained_cmds;
 	struct s_link_cmds	*next;
 }	t_cmd_list;
 
 extern t_msh	g_msh;
 
-void		msh_error(int error_code);
+void			msh_error(int error_code);
 
 // hash functions
-void		alloc_hash_table(char **env);
-t_table		*create_table(int size);
-void		add_t_item(char *var);
-int			hash_function(char *key);
-void		free_item(t_item *item);
-void		delete_item(char *key);
-void		print_table(void);
-char		*ht_search(char *key);
-void		free_hash_table(void);
+void			alloc_hash_table(char **env);
+t_table			*create_table(int size);
+void			add_t_item(char *var);
+int				hash_function(char *key);
+void			free_item(t_item *item);
+void			delete_item(char *key);
+void			print_table(void);
+char			*ht_search(char *key);
+void			free_hash_table(void);
 
 // builtin
-void		export(t_link_cmds	*var);
-void		unset(t_link_cmds	*var);
-void		env(void);
-void		pwd(t_link_cmds	*cmd);
+void			export(t_link_cmds	*var);
+void			unset(t_link_cmds	*var);
+void			env(void);
+void			pwd(t_link_cmds	*cmd);
 // void		exit_minishell(void);
 // int			args_count(char **args);
 // void		cd(t_link_cmds	*cmd);
-void		echo(t_link_cmds	*cmd);
+void			echo(t_link_cmds	*cmd);
 
-void execute(t_link_cmds *cmd, char *envp[], int *pipe_arr, bool pipe_flag);
+void			execute(t_link_cmds *cmd, char *envp[], int *fd, bool flag);
 // void		expand(char *tokens);
 
-void	ft_tokenize(
-				char *input,
-				t_token_list **list,
-				bool quotes[2],
-				char *token_start);
+void			ft_tokenize(
+					char *input,
+					t_token_list **list,
+					bool quotes[2],
+					char *token_start);
 t_token_list	*ft_init_tokenize(char *input);
-char		*expand_variables(const char *input, bool is_single_quote);
-bool		is_delimiter(char c);
-bool		is_quote(char c);
-char		*remove_outer_quotes(char *token);
+char			*expand_variables(const char *input, bool is_single_quote);
+bool			is_delimiter(char c);
+bool			is_quote(char c);
+char			*remove_outer_quotes(char *token);
 #endif

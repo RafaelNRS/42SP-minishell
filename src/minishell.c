@@ -6,15 +6,15 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/14 18:33:08 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/17 10:40:50 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_msh g_msh;
+t_msh	g_msh;
 
-static void sig_handler(int signal)
+static void	sig_handler(int signal)
 {
 	if (signal == SIGINT)
 	{
@@ -25,48 +25,45 @@ static void sig_handler(int signal)
 	}
 }
 
-static void read_cmd_line(char **cmd_line)
+static void	read_cmd_line(char **cmd_line)
 {
-	char *buffer;
+	char	*buffer;
 
 	buffer = "\033[1;96mguest@minishell $ \033[0m";
 	*cmd_line = readline(buffer);
 	// TODO: Show current working directory in the terminal, etc...
 }
 
-t_link_cmds *create_chained_cmd(void)
+t_link_cmds	*create_chained_cmd(void)
 {
-	t_link_cmds *list;
+	t_link_cmds	*list;
 
 	list = malloc(sizeof(t_link_cmds));
 	if (list)
 	{
 		list->full_cmd = NULL;
-		list->cmd = NULL;
 		list->type = 0;
 		list->next = NULL;
 	}
 	return (list);
 }
 
-void add_chained_cmd(t_link_cmds *list, char *full_cmd, char *cmd, int type, int count)
+void	add_chained_cmd(t_link_cmds *list, char *full_cmd, int type, int count)
 {
-	t_link_cmds *new_node;
-	t_link_cmds *tmp;
-	char	**arr_full_cmd;
+	t_link_cmds	*new_node;
+	t_link_cmds	*tmp;
+	char		**arr_full_cmd;
 
-	arr_full_cmd =  ft_split(full_cmd, ' ');
+	arr_full_cmd = ft_split(full_cmd, ' ');
 	if (list->full_cmd)
 	{
 		new_node = malloc(sizeof(t_link_cmds));
 		if (new_node)
 		{
 			new_node->full_cmd = arr_full_cmd;
-			new_node->cmd = cmd;
 			new_node->type = type;
 			new_node->next = NULL;
 			new_node->count = count;
-
 			tmp = list;
 			while (tmp->next)
 				tmp = list->next;
@@ -76,45 +73,43 @@ void add_chained_cmd(t_link_cmds *list, char *full_cmd, char *cmd, int type, int
 	else
 	{
 		list->full_cmd = arr_full_cmd;
-		list->cmd = cmd;
 		list->type = type;
 		list->count = count;
 	}
 }
 
-void check_tokens(t_token	*token, int i, int *error)
+void	check_tokens(t_token *token, int i, int *error)
 {
-	int		type;
+	int	type;
 
 	type = token->type;
 	if (type == PIPE)
 	{
 		if (i == 0 || !token->prev)
 			*error = 2; // ft_printf("syntax error near unexpected token `|'")
-		else if (token->prev->type != STRING && token->prev->type != FILE &&
-			token->prev->type != FILE_A)
-			*error = 2; // ft_printf("syntax error near unexpected token `|'")
+		else if (token->prev->type != STRING && token->prev->type != FILE
+			&& token->prev->type != FILE_A)
+		*error = 2; // ft_printf("syntax error near unexpected token `|'")
 	}
-	else if (type == REDIRECT || type == REDIRECT_A ||
-		type == INPUT || type == HEREDOC)
+	else if (type == REDIRECT || type == REDIRECT_A
+		|| type == INPUT || type == HEREDOC)
 	{
 		if (!token->next)
-			*error = 1;	  // ft_printf("syntax error near unexpected token `\n'");
+			*error = 1; // ft_printf("syntax error near unexpected token `\n'");
 		else if (token->prev && token->prev->type != STRING)
 			*error = 1; // ft_printf("syntax error near unexpected token `%d'", token->token)
-		else if (type == REDIRECT && token->next->type != FILE) 		// > 91-96
+		else if (type == REDIRECT && token->next->type != FILE)
 			*error = 1; // ft_printf("syntax error near unexpected token `%d'", token->token)
-		else if (type == REDIRECT_A && token->next->type != FILE_A) 	// >> 92-97
+		else if (type == REDIRECT_A && token->next->type != FILE_A)
 			*error = 1; // ft_printf("syntax error near unexpected token `%d'", token->token)
-		else if (type == INPUT && token->next->type != INPUT_FILE) 		// < 94-98
+		else if (type == INPUT && token->next->type != INPUT_FILE)
 			*error = 1; // ft_printf("syntax error near unexpected token `%d'", token->token)
-		else if (type == HEREDOC && token->next->type != END_OF_FILE) 	// << 93-99
+		else if (type == HEREDOC && token->next->type != END_OF_FILE)
 			*error = 1; // ft_printf("syntax error near unexpected token `%d'", token->token)
 	}
-	// cat < ping | grep m > test | cat < ping | grep m só retorno o ultimo comando
 }
 
-int validate_tokens(t_token_list *tokens_lst)
+int	validate_tokens(t_token_list *tokens_lst)
 {
 	t_token	*token;
 	int		i;
@@ -127,9 +122,8 @@ int validate_tokens(t_token_list *tokens_lst)
 	{
 		check_tokens(token, i, &error);
 		// if (type == SEMICOLON && token->next)
-		// 	check_tokens(token, i, &error);
 		if (error != FALSE)
-			break;
+			break ;
 		if (token->next)
 			token = token->next;
 		i++;
@@ -174,12 +168,11 @@ char	*ft_strappend(char *s1, char *s2)
 
 t_link_cmds	*create_cmds(t_token_list *tokens_lst)
 {
-	t_token	*token;
-	int current_type;
+	t_token		*token;
+	int			current_type;
 	t_link_cmds	*cmds;
-	char *full_cmd;
-	char *cmd;
-	int count;
+	char		*full_cmd;
+	int			count;
 
 	token = tokens_lst->head;
 	cmds = create_chained_cmd();
@@ -188,7 +181,6 @@ t_link_cmds	*create_cmds(t_token_list *tokens_lst)
 	while (token)
 	{
 		full_cmd = NULL;
-		cmd = token->token;
 		while (token->token && current_type == token->type)
 		{
 			full_cmd = ft_strappend(full_cmd, token->token);
@@ -196,9 +188,9 @@ t_link_cmds	*create_cmds(t_token_list *tokens_lst)
 			if (token->next)
 				token = token->next;
 			else
-				break;
+				break ;
 		}
-		add_chained_cmd(cmds, full_cmd, cmd, current_type, count);
+		add_chained_cmd(cmds, full_cmd, current_type, count);
 		free(full_cmd);
 		if (token->next)
 			current_type = token->next->type;
@@ -208,9 +200,9 @@ t_link_cmds	*create_cmds(t_token_list *tokens_lst)
 	return (cmds);
 }
 
-int chained_cmds_size(t_link_cmds *chained_cmds)
+int	chained_cmds_size(t_link_cmds *chained_cmds)
 {
-	int size;
+	int			size;
 	t_link_cmds	*tmp;
 
 	tmp = chained_cmds;
@@ -231,15 +223,13 @@ void	save_std_fds(int *std_fd)
 	// close(std_fd[OUT]);
 }
 
-void reset_std_fds(int *fd)
+void	reset_std_fds(int *fd)
 {
 	dup2(fd[IN], STDIN_FILENO);
-	// close(fd[IN]);
 	dup2(fd[OUT], STDOUT_FILENO);
-	// close(fd[OUT]);
 }
 
-void create_pipe(int *old_pipe_in)
+void	create_pipe(int *old_pipe_in)
 {
 	int	new_pipe[2];
 
@@ -253,56 +243,43 @@ void create_pipe(int *old_pipe_in)
 	close(new_pipe[IN]);
 }
 
-void execute_cmds(t_link_cmds *chained_cmds, char *envp[])
+void	execute_cmds(t_link_cmds *chained_cmds, char *envp[])
 {
 	t_link_cmds	*current_cmd;
-	//int old_pipe_in;
-	// int		std_fd[2];
-	int		pipe_arr[2];
-	
-	current_cmd = chained_cmds;
-	//old_pipe_in = IN;
-	int saved_stdin = dup(STDIN_FILENO);
-	// int saved_stdout = dup(STDOUT_FILENO);
-	while(current_cmd && current_cmd->next)
-	{
-			// fprintf(stderr, "current_cmd: %s\n", current_cmd->cmd);
-			pipe(pipe_arr);
-            execute(current_cmd, envp, pipe_arr, TRUE);
-			// se for in
-			// se for out
+	int			fd[2];
+	int			saved_stdin;
 
-			current_cmd = current_cmd->next;
+	current_cmd = chained_cmds;
+	saved_stdin = dup(STDIN_FILENO);
+	// int saved_stdout = dup(STDOUT_FILENO);
+	while (current_cmd && current_cmd->next)
+	{
+		pipe(fd);
+		execute(current_cmd, envp, fd, TRUE);
+		current_cmd = current_cmd->next;
 	}
-	// fprintf(stderr, "current_cmd: %s\n", current_cmd->cmd);
-	execute(current_cmd, envp, pipe_arr, FALSE);
+	execute(current_cmd, envp, fd, FALSE);
 	dup2(saved_stdin, STDIN_FILENO);
-	// dup2(saved_stdout, STDOUT_FILENO);
 }
 
-int syntax_analysis(t_token_list *tokens_lst, char *envp[])
+int	syntax_analysis(t_token_list *tokens_lst, char *envp[])
 {
-	int error;
+	int			error;
 	t_link_cmds	*chained_cmds;
 
 // talvez passar o erro p dentro da função;
 	error = validate_tokens(tokens_lst);
 	if (error != 0)
 		return (error);
-
 	chained_cmds = create_cmds(tokens_lst);
 	execute_cmds(chained_cmds, envp);
-	// free(chained_cmds)
 	return (0);
 }
 
-void minishell_loop(char *envp[])
+void	minishell_loop(char *envp[])
 {
-	char *cmd_line;
-	t_token_list *tokens;
-	// t_token *token;
-	// t_cmd_list *cmds_list;
-	// int syntax_analysis_error;
+	char			*cmd_line;
+	t_token_list	*tokens;
 
 	while (true)
 	{
@@ -312,17 +289,17 @@ void minishell_loop(char *envp[])
 		if (ft_strlen(cmd_line) == 0 || ft_isempty(cmd_line))
 		{
 			free(cmd_line);
-			continue;
+			continue ;
 		}
 		add_history(cmd_line);
 		tokens = ft_init_tokenize(cmd_line);
 		if (!tokens)
-			return;
+			return ;
 		syntax_analysis(tokens, envp);
 	}
 }
 
-int main(int argc, char **argv, char *envp[])
+int	main(int argc, char **argv, char *envp[])
 {
 	if (argc > 1 && argv)
 		msh_error(2);
