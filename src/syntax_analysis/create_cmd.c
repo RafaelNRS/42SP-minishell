@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   create_cmd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 12:40:00 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/17 12:46:11 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/20 14:29:36 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	create_new_node(t_link_cmds *list, char **cmd, int type, int count)
 		new_node->count = count;
 		tmp = list;
 		while (tmp->next)
-			tmp = list->next;
+			tmp = tmp->next;
 		tmp->next = new_node;
 	}
 }
@@ -86,6 +86,8 @@ t_link_cmds	*create_cmds(t_token_list *tokens_lst)
 				break ;
 		}
 		add_chained_cmd(cmds, full_cmd, current_type, count);
+		if (token->type == SEMICOLON)
+			add_chained_cmd(cmds, "SEMICOLON", SEMICOLON, 1);
 		free(full_cmd);
 		if (token->next)
 			current_type = token->next->type;

@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 12:40:00 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/19 22:22:53 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/20 14:31:43 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ static bool	has_piped_command(t_link_cmds *current_cmd)
 {
 	while (current_cmd)
 	{
+		if (current_cmd->type == SEMICOLON)
+			return FALSE;
 		if (current_cmd->type == STRING)
 			return TRUE;
 		current_cmd = current_cmd->next;
@@ -78,9 +80,9 @@ void	execute_cmds(t_link_cmds *chained_cmds, char *envp[])
 	int			saved_stdin;
 	int			saved_stdout;
 
-	current_cmd = chained_cmds;
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
+	current_cmd = chained_cmds;
 	while (current_cmd && has_piped_command(current_cmd->next))
 	{
 		pipe(fd);
@@ -92,6 +94,13 @@ void	execute_cmds(t_link_cmds *chained_cmds, char *envp[])
 	execute(current_cmd, envp, fd, FALSE);
 	dup2(saved_stdin, STDIN_FILENO);
 	dup2(saved_stdout, STDOUT_FILENO);
+	while (current_cmd->next && current_cmd->next->type >= FILE && current_cmd->next->type <= END_OF_FILE)
+		current_cmd = current_cmd->next;
+	if (current_cmd->next && current_cmd->next->type == SEMICOLON)
+	{
+		if (current_cmd->next->next)
+			execute_cmds(current_cmd->next->next, envp);
+	}
 }
 
 int	syntax_analysis(t_token_list *tokens_lst, char *envp[])
