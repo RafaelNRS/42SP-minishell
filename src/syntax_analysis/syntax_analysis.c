@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 12:40:00 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/20 14:31:43 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/21 11:23:30 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,17 +60,20 @@ static void	redirect_in(t_link_cmds *next_cmd, int flags)
 
 static void	check_redirections(t_link_cmds *next_cmd, int *fd)
 {
-	if (!next_cmd || (next_cmd->type < FILE && \
-				next_cmd->type > END_OF_FILE) )
-		return ;
-	if (next_cmd->type == FILE)
-		redirect_out(next_cmd, O_WRONLY | O_CREAT | O_TRUNC);
-	else if (next_cmd->type == FILE_A)
-		redirect_out(next_cmd, O_WRONLY | O_CREAT | O_APPEND);
-	else if (next_cmd->type == INPUT_FILE)
-		redirect_in(next_cmd, O_RDONLY | O_CREAT);
-	else if (next_cmd->type == END_OF_FILE)
-		printf("TODO: heredoc(next_cmd, fd); - %d\n",fd[0]);
+	while (next_cmd && (next_cmd->type >= FILE && \
+				next_cmd->type <= END_OF_FILE) )
+	{
+		if (next_cmd->type == FILE)
+			redirect_out(next_cmd, O_WRONLY | O_CREAT | O_TRUNC);
+		else if (next_cmd->type == FILE_A)
+			redirect_out(next_cmd, O_WRONLY | O_CREAT | O_APPEND);
+		else if (next_cmd->type == INPUT_FILE)
+			redirect_in(next_cmd, O_RDONLY | O_CREAT);
+		else if (next_cmd->type == END_OF_FILE)
+			printf("TODO: heredoc(next_cmd, fd); - %d\n",fd[0]);
+		
+		next_cmd = next_cmd->next;
+	}
 }
 
 void	execute_cmds(t_link_cmds *chained_cmds, char *envp[])
@@ -83,12 +86,15 @@ void	execute_cmds(t_link_cmds *chained_cmds, char *envp[])
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
 	current_cmd = chained_cmds;
-	while (current_cmd && has_piped_command(current_cmd->next))
+	while (current_cmd && has_piped_command(current_cmd->next) \
+		&& current_cmd->type == STRING)
 	{
 		pipe(fd);
 		check_redirections(current_cmd->next, fd);
 		execute(current_cmd, envp, fd, TRUE);
 		current_cmd = current_cmd->next;
+		while (current_cmd && current_cmd->type >= FILE && current_cmd->type <= END_OF_FILE)
+			current_cmd = current_cmd->next;
 	}
 	check_redirections(current_cmd->next, fd);
 	execute(current_cmd, envp, fd, FALSE);

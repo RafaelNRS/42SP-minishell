@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 16:57:01 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/17 16:32:11 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/20 16:36:20 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,9 @@ void	exec_func(t_link_cmds	*cmd, char *envp[])
 
 	path = ft_get_path(cmd->full_cmd[0], envp);
 	if (!path)
-		write(2, "command not found: ", 19);
+		fprintf(stderr, "command not found: %s\n", cmd->full_cmd[0]);
+		//write(2, "command not found: \n", 20);
+		
 	execve(path, cmd->full_cmd, envp);
 }
 

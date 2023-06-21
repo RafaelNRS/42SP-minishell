@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   validate_tokens.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 12:40:00 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/17 16:23:44 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/21 11:17:07 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,9 @@ void	check_in_out_redirects(int type, t_token *token)
 {
 	if (!token->next)
 		msh_error(5);
-	else if (token->prev && token->prev->type != STRING)
+	//TODO: Melhorar isso aqui (cat < Makefile > arquivo, cat > arquivo < Makefile é valido por exemplo, mas alguns outros cenarios nao)
+	else if (token->prev && (token->prev->type != STRING && \
+		token->prev->type < FILE && token->prev->type > END_OF_FILE))
 		msh_error(5);
 	else if (type == REDIRECT && token->next->type != FILE)
 		msh_error(5);
@@ -33,12 +35,12 @@ void	check_tokens(t_token *token, int i)
 	int	type;
 
 	type = token->type;
-	if (type == PIPE)
+	if (type == PIPE || type == SEMICOLON)
 	{
 		if (i == 0 || !token->prev)
 			msh_error(4);
 		else if (token->prev->type != STRING && token->prev->type != FILE
-			&& token->prev->type != FILE_A)
+			&& token->prev->type != FILE_A && token->prev->type != INPUT_FILE)
 			msh_error(4);
 	}
 	else if (type == REDIRECT || type == REDIRECT_A
