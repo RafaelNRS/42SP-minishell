@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 12:40:00 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/21 12:21:24 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/21 14:01:40 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,16 +53,87 @@ static void	redirect_in(t_link_cmds *next_cmd, int flags)
 	}
 }
 
+void	heredoc_signal(int signal)
+{
+	(void)signal;
+	g_msh.error_code = 130;
+	write(2, "\n", 1);
+	exit(130);
+}
+
+static void	receive_input(int tmp_file, char *eof)
+{
+	char	*input;
+
+	signal(SIGINT, heredoc_signal);
+	while (true)
+	{
+		input = readline("> ");
+		if (!input)
+		{
+			close(tmp_file);
+			exit(0);
+		}
+		if (ft_strncmp(input, eof, ft_strlen(eof)))
+			ft_putendl_fd(input, tmp_file);
+		else
+		{
+			close(tmp_file);
+			free(input);
+			break ;
+		}
+		free(input);
+	}
+	exit (0);
+}
+
+static void	read_tmp_file(void)
+{
+	int	tmp_file;
+
+	tmp_file = open(TMP_FILE, O_RDONLY);
+	unlink(TMP_FILE);
+	dup2(tmp_file, IN);
+	close(tmp_file);
+}
+
 static void	heredoc(char *eof, int *fd)
 {
-	
+	int	tmp_file;
+	int	save_out;
+	int	pid;
+	int	status;
+
+	tmp_file = open(TMP_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0600);
+	if (tmp_file == -1)
+		return ;
+	save_out = dup(OUT);
+	dup2(fd[OUT], STDOUT_FILENO);
+	signal(SIGINT, SIG_IGN);
+	pid = fork();
+	if (pid == 0)
+		receive_input(tmp_file, eof);
+	waitpid(pid, &status, 0);
+	read_tmp_file();
+	dup2(save_out, STDOUT_FILENO);
+	close(save_out);
 }
 
 static bool	check_redirections(t_link_cmds *next_cmd, int *fd)
 {
-	bool	changed;
+	bool		changed;
+	t_link_cmds *current_cmd;
 
+	current_cmd = next_cmd;
 	changed = FALSE;
+	while (next_cmd && (next_cmd->type >= FILE && \
+				next_cmd->type <= END_OF_FILE) )
+	{
+		if (next_cmd->type == END_OF_FILE)
+			heredoc(next_cmd->full_cmd[0], fd);
+		next_cmd = next_cmd->next;
+	}
+	next_cmd = current_cmd;
 	while (next_cmd && (next_cmd->type >= FILE && \
 				next_cmd->type <= END_OF_FILE) )
 	{
@@ -72,9 +143,6 @@ static bool	check_redirections(t_link_cmds *next_cmd, int *fd)
 			redirect_out(next_cmd, O_WRONLY | O_CREAT | O_APPEND);
 		else if (next_cmd->type == INPUT_FILE)
 			redirect_in(next_cmd, O_RDONLY | O_CREAT);
-		else if (next_cmd->type == END_OF_FILE)
-			printf("TODO: heredoc(next_cmd->full_cmd[0], fd); - %d\n",fd[0]);
-		
 		changed = TRUE;
 		next_cmd = next_cmd->next;
 	}

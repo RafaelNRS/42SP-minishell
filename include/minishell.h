@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/19 22:09:41 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/21 13:29:46 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,8 @@
 
 # define TRUE 1
 # define FALSE 0
+
+# define TMP_FILE "/tmp/tmp_file"
 
 typedef struct t_item
 {
