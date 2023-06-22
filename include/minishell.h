@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/19 23:36:27 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/22 00:33:12 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,8 +121,7 @@ void			unset(t_link_cmds	*var);
 void			env(void);
 void			pwd(t_link_cmds	*cmd);
 // void		exit_minishell(void);
-// int			args_count(char **args);
-// void		cd(t_link_cmds	*cmd);
+void			cd(t_link_cmds	*cmd);
 void			echo(t_link_cmds	*cmd);
 
 void			execute(t_link_cmds *cmd, int *fd, bool flag);

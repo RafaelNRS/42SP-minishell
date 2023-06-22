@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 16:57:01 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/22 00:25:52 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/22 00:32:40 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,8 +119,8 @@ void	execute(t_link_cmds	*cmd, int *fd, bool flag)
 		pwd(cmd);
 	// else if (ft_strncmp(cmd->full_cmd[0], "exit\0", 5) == 0)
 	// 	exit_minishell();
-	// else if (ft_strncmp(cmd->full_cmd[0], "cd\0", 3) == 0)
-	// 	cd();
+	else if (ft_strncmp(cmd->full_cmd[0], "cd\0", 3) == 0)
+		cd(cmd);
 	else if (ft_strncmp(cmd->full_cmd[0], "echo\0", 5) == 0)
 		echo(cmd);
 	else
