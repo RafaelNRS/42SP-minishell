@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/22 00:33:12 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/22 19:14:06 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # include <dirent.h>
 # include <errno.h>
 # include <sys/wait.h>
+# include <fcntl.h>
 
 # define MSH_LINE_BUFFER_SIZE 1024
 # define MSH_TOKEN_BUFFER_SIZE 64
@@ -50,6 +51,8 @@
 
 # define TRUE 1
 # define FALSE 0
+
+# define TMP_FILE "/tmp/tmp_file"
 
 typedef struct t_item
 {
