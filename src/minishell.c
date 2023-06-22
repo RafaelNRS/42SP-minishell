@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/17 12:52:29 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/19 23:32:19 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static void	read_cmd_line(char **cmd_line)
 	// TODO: Show current working directory in the terminal, etc...
 }
 
-void	minishell_loop(char *envp[])
+void	minishell_loop(void)
 {
 	char			*cmd_line;
 	t_token_list	*tokens;
@@ -53,17 +53,17 @@ void	minishell_loop(char *envp[])
 		tokens = ft_init_tokenize(cmd_line);
 		if (!tokens)
 			return ;
-		syntax_analysis(tokens, envp);
+		syntax_analysis(tokens);
 	}
 }
 
-int	main(int argc, char **argv, char *envp[])
+int	main(int argc, char **argv)
 {
 	if (argc > 1 && argv)
 		msh_error(2);
 	alloc_hash_table(__environ);
 	g_msh.error_code = 0;
-	minishell_loop(envp);
+	minishell_loop();
 	// TODO: Perform cleanup
 	return (0);
 }

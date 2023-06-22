@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/17 12:53:18 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/19 23:36:27 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,11 +125,12 @@ void			pwd(t_link_cmds	*cmd);
 // void		cd(t_link_cmds	*cmd);
 void			echo(t_link_cmds	*cmd);
 
-void			execute(t_link_cmds *cmd, char *envp[], int *fd, bool flag);
-int				syntax_analysis(t_token_list *tokens_lst, char *envp[]);
+void			execute(t_link_cmds *cmd, int *fd, bool flag);
+int				syntax_analysis(t_token_list *tokens_lst);
 t_link_cmds		*create_cmds(t_token_list *tokens_lst);
-char			*ft_strappend(char *s1, char *s2);
+char			*ft_strappend(char *s1, char *s2, int space);
 void			validate_tokens(t_token_list *tokens_lst);
+char			*join_n_strs(int count, ...);
 
 // void		expand(char *tokens);
 

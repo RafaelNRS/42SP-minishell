@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 12:40:00 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/17 12:46:11 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/19 23:28:49 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ t_link_cmds	*create_cmds(t_token_list *tokens_lst)
 		full_cmd = NULL;
 		while (token->token && current_type == token->type)
 		{
-			full_cmd = ft_strappend(full_cmd, token->token);
+			full_cmd = ft_strappend(full_cmd, token->token, TRUE);
 			count++;
 			if (token->next)
 				token = token->next;

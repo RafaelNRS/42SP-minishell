@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 12:46:32 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/17 12:46:38 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/19 23:29:02 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ char	*create_string(char *s1, char *s2)
 	return (new_string);
 }
 
-char	*ft_strappend(char *s1, char *s2)
+char	*ft_strappend(char *s1, char *s2, int space)
 {
 	char	*new_string;
 	size_t	i;
@@ -42,7 +42,7 @@ char	*ft_strappend(char *s1, char *s2)
 		new_string[i] = s1[i];
 		i++;
 	}
-	if (s1)
+	if (s1 && space)
 	{
 		new_string[i] = ' ';
 		i++;
