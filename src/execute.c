@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 16:57:01 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/20 16:36:20 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/21 21:11:41 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,20 @@ void	exec_cmd(t_link_cmds	*cmd, char *envp[])
 		exec_func(cmd, envp);
 }
 
+void	interrupt_signal(int signal)
+{
+	(void)signal;
+	g_msh.error_code = 130;
+	write(2, "\n", 1);
+}
+
+void	quit_signal(int signal)
+{
+	(void)signal;
+	g_msh.error_code = 131;
+	write(2, "\n", 1);
+}
+
 void	execute(t_link_cmds	*cmd, char *envp[], int *fd, bool flag)
 {
 	int pid;
@@ -82,6 +96,8 @@ void	execute(t_link_cmds	*cmd, char *envp[], int *fd, bool flag)
 
 	// TODO refactor too big
 	pid = fork();
+	signal(SIGINT, interrupt_signal);
+	signal(SIGQUIT, quit_signal);
 	if (flag)
 	{
 		if (pid == 0)
@@ -106,4 +122,5 @@ void	execute(t_link_cmds	*cmd, char *envp[], int *fd, bool flag)
 		}
 		waitpid(pid, &status, 0);
 	}
+	g_msh.error_code = status;
 }

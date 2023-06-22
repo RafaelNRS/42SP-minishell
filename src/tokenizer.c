@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 08:51:20 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/18 16:27:25 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/21 21:38:02 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,7 +173,7 @@ void	copy_variable_value(char *var_name, char **out_ptr)
 	char	*var_value;
 
 	if (var_name[0] != '?')
-		var_value = getenv(var_name);
+		var_value = ht_search(var_name);
 	else
 		var_value = ft_itoa(g_msh.error_code);
 	if (var_value)
