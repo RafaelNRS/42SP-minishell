@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/23 18:22:23 by mariana           #+#    #+#             */
-/*   Updated: 2023/05/22 17:00:00 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/22 00:37:12 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,48 +50,42 @@ void	change_path(char *path)
 		ft_printf("cd: no such file or directory: %s\n", path);
 }
 
-void	change_to_old_path(t_token_list *cmd)
+void	change_to_old_path(t_link_cmds *cmd)
 {
-	if (ft_strlen(cmd->head->next->token) != 1)
-		ft_printf("cd: %s: invalid option\n", cmd->head->next->token);
+	if (cmd->count > 2)
+		ft_printf("cd: string not in pwd: -\n"); // add error 1
+	else if (ft_strlen(cmd->full_cmd[1]) != 1)
+		ft_printf("cd: no such file or directory: %s\n", cmd->full_cmd[1]); // add error 1
 	else
 		change_path(ht_search("OLDPWD"));
 }
-
-void	cd_path(char *root_path, t_token_list *cmd)
+void	cd_path(char *root_path, t_link_cmds *cmd, char *symbol)
 {
-	char	*tmp_path;
 	char	*path;
-	int		len;
-	int		root_len;
 
-	if (cmd->count == 1 || ft_strlen(cmd->head->next->token) == 1)
+	if (cmd->count == 1 || ft_strlen(cmd->full_cmd[1]) == 1)
 		change_path(ht_search(root_path));
 	else
 	{
-		path = (char *)(cmd->head->next->token + 1);
-		root_len = ft_strlen(ht_search(root_path));
-		len = root_len + ft_strlen(path) + 1;
-		tmp_path = (char *) malloc(sizeof(char) * len);
-		ft_strlcpy(tmp_path, ht_search(root_path), root_len + 1);
-		ft_strlcat(tmp_path, path, len);
-		change_path(tmp_path);
-		free(tmp_path);
+		path = ft_strappend(ht_search(root_path), ft_strtrim(cmd->full_cmd[1], symbol), FALSE);
+		change_path(path);
 	}
 }
 
-void	cd(t_token_list *cmd)
+void	cd(t_link_cmds *cmd)
 {
-	if (cmd->count > 2)
-		ft_printf("cd: too many arguments\n");
 	if (cmd->count == 1)
 		change_path(ht_search("HOME"));
-	else if (ft_strncmp(cmd->head->next->token, "~", 1) == 0)
-		cd_path("HOME", cmd);
-	else if (ft_strncmp(cmd->head->next->token, "-", 1) == 0)
+	else if (cmd->full_cmd[1] && ft_strncmp(cmd->full_cmd[1], "~", 1) == 0)
+		cd_path("HOME", cmd, "~");
+	else if (cmd->full_cmd[1] && ft_strncmp(cmd->full_cmd[1], "-", 1) == 0)
 		change_to_old_path(cmd);
-	else if (ft_strncmp(cmd->head->next->token, ".", 1) == 0)
-		cd_path("PWD", cmd);
+	else if (cmd->full_cmd[1] && ft_strncmp(cmd->full_cmd[1], ".", 1) == 0)
+		cd_path("PWD", cmd, ".");
+	else if (cmd->count == 3)
+		ft_printf("cd: no such file or directory: %s%s\n", cmd->full_cmd[2], cmd->full_cmd[1]); //1
+	else if (cmd->count > 3)
+		ft_printf("cd: too many arguments"); //1
 	else
-		change_path(cmd->head->next->token);
+		change_path(cmd->full_cmd[1]);
 }
