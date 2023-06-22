@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/23 18:22:23 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/22 00:37:12 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/22 00:43:20 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,18 +47,28 @@ void	change_path(char *path)
 		update_paths(path);
 	}
 	else
+	{
 		ft_printf("cd: no such file or directory: %s\n", path);
+		g_msh.error_code = 1;
+	}
 }
 
 void	change_to_old_path(t_link_cmds *cmd)
 {
 	if (cmd->count > 2)
-		ft_printf("cd: string not in pwd: -\n"); // add error 1
+	{
+		ft_printf("cd: string not in pwd: -\n");
+		g_msh.error_code = 1;
+	}
 	else if (ft_strlen(cmd->full_cmd[1]) != 1)
-		ft_printf("cd: no such file or directory: %s\n", cmd->full_cmd[1]); // add error 1
+	{
+		ft_printf("cd: no such file or directory: %s\n", cmd->full_cmd[1]);
+		g_msh.error_code = 1;
+	}
 	else
 		change_path(ht_search("OLDPWD"));
 }
+
 void	cd_path(char *root_path, t_link_cmds *cmd, char *symbol)
 {
 	char	*path;
@@ -83,9 +93,15 @@ void	cd(t_link_cmds *cmd)
 	else if (cmd->full_cmd[1] && ft_strncmp(cmd->full_cmd[1], ".", 1) == 0)
 		cd_path("PWD", cmd, ".");
 	else if (cmd->count == 3)
-		ft_printf("cd: no such file or directory: %s%s\n", cmd->full_cmd[2], cmd->full_cmd[1]); //1
+	{
+		ft_printf("cd: no such file or directory: %s%s\n", cmd->full_cmd[2], cmd->full_cmd[1]);
+		g_msh.error_code = 1;
+	}
 	else if (cmd->count > 3)
-		ft_printf("cd: too many arguments"); //1
+	{
+		ft_printf("cd: too many arguments");
+		g_msh.error_code = 1;
+	}
 	else
 		change_path(cmd->full_cmd[1]);
 }
