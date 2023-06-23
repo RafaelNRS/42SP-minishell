@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 12:40:00 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/22 19:26:15 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/22 22:07:16 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,12 @@ static bool	has_piped_command(t_link_cmds *current_cmd)
 	while (current_cmd)
 	{
 		if (current_cmd->type == SEMICOLON)
-			return FALSE;
+			return (FALSE);
 		if (current_cmd->type == STRING)
-			return TRUE;
+			return (TRUE);
 		current_cmd = current_cmd->next;
 	}
-	return FALSE;
+	return (FALSE);
 }
 
 static void	redirect_out(t_link_cmds *next_cmd, int flags)
@@ -122,12 +122,12 @@ static void	heredoc(char *eof, int *fd)
 static bool	check_redirections(t_link_cmds *next_cmd, int *fd)
 {
 	bool		changed;
-	t_link_cmds *current_cmd;
+	t_link_cmds	*current_cmd;
 
 	current_cmd = next_cmd;
 	changed = FALSE;
 	while (next_cmd && (next_cmd->type >= FILE && \
-				next_cmd->type <= END_OF_FILE) )
+				next_cmd->type <= END_OF_FILE))
 	{
 		if (next_cmd->type == END_OF_FILE)
 			heredoc(next_cmd->full_cmd[0], fd);
@@ -135,7 +135,7 @@ static bool	check_redirections(t_link_cmds *next_cmd, int *fd)
 	}
 	next_cmd = current_cmd;
 	while (next_cmd && (next_cmd->type >= FILE && \
-				next_cmd->type <= END_OF_FILE) )
+				next_cmd->type <= END_OF_FILE))
 	{
 		if (next_cmd->type == FILE)
 			redirect_out(next_cmd, O_WRONLY | O_CREAT | O_TRUNC);
@@ -180,7 +180,7 @@ void	execute_cmds(t_link_cmds *chained_cmds)
 		current_cmd = current_cmd->next;
 	if (current_cmd->next && current_cmd->next->type == SEMICOLON \
 		&& current_cmd->next->next)
-			execute_cmds(current_cmd->next->next);
+		execute_cmds(current_cmd->next->next);
 }
 
 int	syntax_analysis(t_token_list *tokens_lst)

@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 16:57:01 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/22 21:53:38 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/22 22:07:57 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,8 +105,8 @@ void	exec_cmd(t_link_cmds *cmd)
 
 void	execute(t_link_cmds	*cmd, int *fd, bool flag)
 {
-	int pid;
-    int status;
+	int	pid;
+	int	status;
 
 	// TODO refactor too big
 	if (ft_strncmp(cmd->full_cmd[0], "export\0", 7) == 0)
