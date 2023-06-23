@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/23 09:50:17 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 14:11:31 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ void			export(t_link_cmds	*var);
 void			unset(t_link_cmds	*var);
 void			env(void);
 void			pwd(void);
-void			msh_exit(char **argv);
+void			msh_exit(t_link_cmds *cmd);
 void			cd(t_link_cmds	*cmd);
 void			echo(t_link_cmds	*cmd);
 

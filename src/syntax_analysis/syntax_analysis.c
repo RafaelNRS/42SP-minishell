@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 12:40:00 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/23 12:10:19 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 13:22:36 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,8 @@ static void	heredoc(char *eof, int *fd)
 	int	pid;
 	int	status;
 
+	fd[0] = 0;
+	fd[1] = 0;
 	tmp_file = open(TMP_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0600);
 	if (tmp_file == -1)
 		return ;

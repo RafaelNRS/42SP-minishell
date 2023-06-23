@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 12:40:00 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/23 11:07:51 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 13:59:41 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,26 @@
 
 void	cleanup_chained_cmd(t_link_cmds *node)
 {
+	fprintf(stderr,"Cleanup\n");
 	t_link_cmds *next_node;
 	t_link_cmds *tmp_node;
+	int	i;
 
+	i = 0;
 	next_node = node;
 	while (next_node)
 	{
+		i = 0;
 		tmp_node = next_node->next;
+		if (next_node->full_cmd)
+		{
+			while (i <= next_node->count)
+			{
+				free(next_node->full_cmd[i]);
+				i++;
+			}
+			free(next_node->full_cmd);			
+		}
 		free(next_node);
 		next_node = tmp_node;
 	}

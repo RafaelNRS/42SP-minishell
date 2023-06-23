@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strappend.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 12:46:32 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/19 23:29:02 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/23 13:04:22 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ char	*create_string(char *s1, char *s2)
 	else
 		s1_len = ft_strlen(s1);
 	len = s1_len + ft_strlen(s2) + 1;
-	new_string = (char *) malloc((len * sizeof(char)));
+	new_string = (char *) malloc((len * sizeof(char)) + 1);
 	if (new_string == NULL)
 		return (NULL);
 	return (new_string);

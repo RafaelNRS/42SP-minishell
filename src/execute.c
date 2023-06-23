@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 16:57:01 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/23 09:44:24 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 14:09:19 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,8 +113,6 @@ void	exec_cmd(t_link_cmds *cmd)
 		env();
 	else if (ft_strncmp(cmd->full_cmd[0], "pwd\0", 4) == 0)
 		pwd();
-	else if (ft_strncmp(cmd->full_cmd[0], "exit\0", 5) == 0)
-		msh_exit(cmd->full_cmd);
 	else if (ft_strncmp(cmd->full_cmd[0], "echo\0", 5) == 0)
 		echo(cmd);
 	else
@@ -133,6 +131,8 @@ void	execute(t_link_cmds	*cmd, int *fd, bool flag)
 		unset(cmd);
 	else if (ft_strncmp(cmd->full_cmd[0], "cd\0", 3) == 0)
 		cd(cmd);
+	else if (ft_strncmp(cmd->full_cmd[0], "exit\0", 5) == 0)
+		msh_exit(cmd);
 	else
 	{
 		pid = fork();

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/19 23:32:19 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/23 14:14:35 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,12 @@ void	minishell_loop(void)
 		add_history(cmd_line);
 		tokens = ft_init_tokenize(cmd_line);
 		if (!tokens)
+		{
+			free(cmd_line);
 			return ;
+		}
 		syntax_analysis(tokens);
+		free(cmd_line);
 	}
 }
 

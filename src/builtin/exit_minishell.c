@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/23 15:57:55 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/23 10:24:25 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 14:12:22 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,22 +24,23 @@ static bool	is_number(char *c)
 
 void	exit_minishell()
 {
-	
+	free_hash_table();
+	exit(g_msh.error_code);
 }
 
-void	msh_exit(char **argv)
+void	msh_exit(t_link_cmds *cmd)
 {
 	int ret_code;
 
 	ret_code = 0;
-	if (argv[1] && !is_number(argv[1]))
+	if (cmd->count >= 2 && !is_number(cmd->full_cmd[1]))
 		msh_error(1);
 		// msh_error("exit: numeric argument required");
-	else if (argv[2])
+	else if (cmd->count >= 3)
 		msh_error(1);
 		// msh_error("exit: too many arguments");
-	else if (argv[1])
-		ret_code = ft_atoi(argv[1]);
+	else if (cmd->count == 2)
+		ret_code = ft_atoi(cmd->full_cmd[1]);
 	ft_printf("exit - %d\n", ret_code);
 	// se mandar mais argumentos
 	// syntax error near unexpected token `2' -> exit(2) senao funfa normal

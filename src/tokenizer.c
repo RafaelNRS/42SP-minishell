@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 08:51:20 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/23 12:16:38 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 13:21:01 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,6 +213,8 @@ char	*expand_variables(const char *in_ptr, bool is_single_quote)
 	char	var_name[256];
 
 	output = malloc(4096);
+	if (!output)
+		return (NULL);
 	out_ptr = output;
 	is_single_quote = (in_ptr[0] == '\'');
 	while (*in_ptr)
@@ -256,7 +258,7 @@ void	cleanup_token_list(t_token_list *list)
 	t_token	*next_node;
 
 	node = list->head;
-	while (node->next)
+	while (node)
 	{
 		next_node = node->next;
 		if (node->token)
@@ -305,6 +307,7 @@ static void	define_type(t_token **token)
 {
 	int	prev_type;
 
+	prev_type = 0;
 	if ((*token)->prev && (*token)->prev->type)
 		prev_type = (*token)->prev->type;
 	if (is_operator((*token)->token[0]))

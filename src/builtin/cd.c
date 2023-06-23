@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/23 18:22:23 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/23 10:32:24 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 13:51:19 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,23 +14,28 @@
 
 static void	change_path(char *path)
 {
-	char	*buf;
 	char	*path_copy;
 	char	*old_pwd;
+	char	*tmp;
+	char	*tmp2;
 
-	buf = NULL;
 	path_copy = ft_strdup(path);
-	old_pwd = getcwd(buf, 0);
+	old_pwd = getcwd(NULL, 0);
 	if (chdir(path_copy) != 0)
 	{
 		write(2, "cd: no such file or directory\n", 31);
 		free(path_copy);
-		return ;
+		free(old_pwd);
+		return;
 	}
-	add_t_item(ft_strjoin("OLDPWD=", old_pwd));
-	buf = NULL;
-	add_t_item(ft_strjoin("PWD=", getcwd(buf, 0)));
-	free(buf);
+	tmp = ft_strjoin("OLDPWD=", old_pwd);
+	add_t_item(tmp);
+	free(tmp);
+	tmp = getcwd(NULL, 0);
+	tmp2 = ft_strjoin("PWD=", tmp);
+	add_t_item(tmp2);
+	free(tmp);
+	free(tmp2);
 	free(old_pwd);
 	free(path_copy);
 }
