@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 14:09:25 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/14 21:51:26 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/23 14:40:20 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	echo(t_link_cmds	*cmd)
 
 	i = 1;
 	current = cmd->full_cmd;
-	if (cmd->count > 1)
+	if (cmd->count > 1 && cmd->full_cmd[1])
 	{
 		has_flag_n = 0;
 		if (ft_strncmp(current[i], "-n", 2) == 0 && ft_strlen(current[i]) == 2)
@@ -39,4 +39,6 @@ void	echo(t_link_cmds	*cmd)
 			i++;
 		}
 	}
+	else
+		ft_printf("\n");
 }
