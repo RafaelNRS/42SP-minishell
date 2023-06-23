@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/23 14:14:35 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 18:24:37 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ static void	sig_handler(int signal)
 {
 	if (signal == SIGINT)
 	{
+		(void)signal;
+		g_msh.error_code = 130;
 		write(1, "\n", 1);
 		rl_replace_line("", 0);
 		rl_on_new_line();
@@ -44,6 +46,8 @@ void	minishell_loop(void)
 		signal(SIGQUIT, SIG_IGN);
 		signal(SIGINT, sig_handler);
 		read_cmd_line(&cmd_line);
+		if (!cmd_line)
+			exit_minishell();
 		if (ft_strlen(cmd_line) == 0 || ft_isempty(cmd_line))
 		{
 			free(cmd_line);
@@ -64,7 +68,10 @@ void	minishell_loop(void)
 int	main(int argc, char **argv)
 {
 	if (argc > 1 && argv)
-		msh_error(2);
+	{
+		msh_error(2, "minishell", "too many arguments.");
+		exit_minishell();
+	}
 	alloc_hash_table(__environ);
 	g_msh.error_code = 0;
 	minishell_loop();

@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/23 18:22:23 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/23 13:51:19 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 18:29:38 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static void	change_path(char *path)
 	old_pwd = getcwd(NULL, 0);
 	if (chdir(path_copy) != 0)
 	{
-		write(2, "cd: no such file or directory\n", 31);
+		msh_error(1, "cd", "no such file or directory\n");
 		free(path_copy);
 		free(old_pwd);
 		return;
@@ -43,23 +43,18 @@ static void	change_path(char *path)
 static void	change_to_old_path(t_link_cmds *cmd)
 {
 	if (ft_strlen(cmd->full_cmd[1]) != 1)
-	{
-		ft_printf("cd: no such file or directory: %s\n", cmd->full_cmd[1]);
-		g_msh.error_code = 1;
-	}
+		msh_error(1, "cd", "no such file or directory\n");
 	else
 		change_path(ht_search("OLDPWD"));
 }
 
 void	cd(t_link_cmds *cmd)
 {
+	g_msh.error_code = 0;
 	if (cmd->count == 1)
 		change_path(ht_search("HOME"));
 	else if (cmd->count >= 3)
-	{
-		ft_printf("cd: too many arguments\n");
-		g_msh.error_code = 1;
-	}
+		msh_error(1, "cd", "too many arguments\n");
 	else if (cmd->full_cmd[1] && ft_strncmp(cmd->full_cmd[1], "-", 1) == 0)
 		change_to_old_path(cmd);
 	else

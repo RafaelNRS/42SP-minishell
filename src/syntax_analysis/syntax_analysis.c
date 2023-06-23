@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 12:40:00 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/23 13:22:36 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 18:15:01 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static int	redirect_out(t_link_cmds *next_cmd, int flags)
 	fd_open = open(next_cmd->full_cmd[0], flags, 0777);
 	if (fd_open == -1)
 	{
-		msh_error(1);
+		msh_error(1, "minishell", "Permission denied.");
 		return 0;
 	}
 	else
@@ -49,13 +49,13 @@ static int	redirect_in(t_link_cmds *next_cmd, int flags)
 
 	if (access(next_cmd->full_cmd[0], F_OK) == -1)
 	{
-		fprintf(stderr, "%s not found.\n", next_cmd->full_cmd[0]);
+		msh_error(1, "minishell", "No such file or directory.");
 		return 0;
 	}
 	fd_open = open(next_cmd->full_cmd[0], flags);
 	if (fd_open == -1)
 	{
-		msh_error(1);
+		msh_error(1, "minishell", "Permission denied.");
 		return 0;
 	}
 	else

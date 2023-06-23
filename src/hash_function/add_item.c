@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   add_item.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/23 13:24:41 by mariana           #+#    #+#             */
-/*   Updated: 2023/05/01 11:20:05 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/23 18:16:36 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ t_item	*create_new_item(char *var)
 
 	new_item = (t_item *)ft_calloc(sizeof(t_item), 1);
 	if (!new_item)
-		msh_error(2);
+		msh_error(2, "minishell", "memory allocation error.");
 	key = get_key(var, '=');
 	if (key)
 	{
@@ -110,7 +110,7 @@ void	add_t_item(char *var)
 	int		hash_index;
 
 	if (g_msh.env->count == g_msh.env->size)
-		msh_error(3);
+		msh_error(3, "minishell", "error adding item.");
 	new_item = create_new_item(var);
 	hash_index = hash_function(new_item->key);
 	current = g_msh.env->bucket_items[hash_index];

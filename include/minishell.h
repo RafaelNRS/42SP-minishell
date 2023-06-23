@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/23 14:11:31 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 18:05:19 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ typedef struct s_cmd_list
 
 extern t_msh	g_msh;
 
-void			msh_error(int error_code);
+void			msh_error(int error_code, char *cmd, char *message);
 
 // hash functions
 void			alloc_hash_table(char **env);
