@@ -6,7 +6,7 @@
 /*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 16:57:01 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/22 19:21:11 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/22 21:53:38 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,49 +87,9 @@ void	quit_signal(int signal)
 	write(2, "\n", 1);
 }
 
-void	exec_cmd(t_link_cmds	*cmd,int *fd, bool flag)
+void	exec_cmd(t_link_cmds *cmd)
 {
-	int pid;
-    int status;
-
-	// TODO refactor too big
-	pid = fork();
-	signal(SIGINT, interrupt_signal);
-	signal(SIGQUIT, quit_signal);
-	if (flag)
-	{
-		if (pid == 0)
-		{
-			dup2(fd[1], STDOUT_FILENO);
-			close(fd[0]);
-			close(fd[1]);
-			exec_func(cmd);
-			exit(1);
-		}
-		waitpid(pid, &status, 0);
-		dup2(fd[0], STDIN_FILENO);
-		close(fd[0]);
-		close(fd[1]);
-	}
-	else
-	{
-		if (pid == 0)
-		{
-			exec_func(cmd);
-			exit(1);
-		}
-		waitpid(pid, &status, 0);
-	}
-	g_msh.error_code = status;
-}
-
-void	execute(t_link_cmds	*cmd, int *fd, bool flag)
-{
-	if (ft_strncmp(cmd->full_cmd[0], "export\0", 7) == 0)
-		export(cmd);
-	else if (ft_strncmp(cmd->full_cmd[0], "unset\0", 6) == 0)
-		unset(cmd);
-	else if (ft_strncmp(cmd->full_cmd[0], "env\0", 4) == 0)
+	if (ft_strncmp(cmd->full_cmd[0], "env\0", 4) == 0)
 		env();
 	else if (ft_strncmp(cmd->full_cmd[0], "pwd\0", 4) == 0)
 		pwd(cmd);
@@ -140,5 +100,48 @@ void	execute(t_link_cmds	*cmd, int *fd, bool flag)
 	else if (ft_strncmp(cmd->full_cmd[0], "echo\0", 5) == 0)
 		echo(cmd);
 	else
-		exec_cmd(cmd, fd, flag);
+		exec_func(cmd);
+}
+
+void	execute(t_link_cmds	*cmd, int *fd, bool flag)
+{
+	int pid;
+    int status;
+
+	// TODO refactor too big
+	if (ft_strncmp(cmd->full_cmd[0], "export\0", 7) == 0)
+		export(cmd);
+	else if (ft_strncmp(cmd->full_cmd[0], "unset\0", 6) == 0)
+		unset(cmd);
+	else
+	{
+		pid = fork();
+		signal(SIGINT, interrupt_signal);
+		signal(SIGQUIT, quit_signal);
+		if (flag)
+		{
+			if (pid == 0)
+			{
+				dup2(fd[1], STDOUT_FILENO);
+				close(fd[0]);
+				close(fd[1]);
+				exec_cmd(cmd);
+				exit(1);
+			}
+			waitpid(pid, &status, 0);
+			dup2(fd[0], STDIN_FILENO);
+			close(fd[0]);
+			close(fd[1]);
+		}
+		else
+		{
+			if (pid == 0)
+			{
+				exec_cmd(cmd);
+				exit(1);
+			}
+			waitpid(pid, &status, 0);
+		}
+		g_msh.error_code = status;
+	}
 }
