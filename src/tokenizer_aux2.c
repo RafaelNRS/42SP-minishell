@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/23 20:38:50 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/23 20:39:39 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 20:44:29 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ bool	is_double_operator(char c1, char c2)
 		(c1 == '>' && c2 == '>'));
 }
 
-static void	shift_characters_right(char *line, int start, int len)
+void	shift_characters_right(char *line, int start, int len)
 {
 	int	i;
 
@@ -30,7 +30,7 @@ static void	shift_characters_right(char *line, int start, int len)
 	}
 }
 
-static void	insert_single_operator_spaces(char *line, int index, int len)
+void	insert_single_operator_spaces(char *line, int index, int len)
 {
 	if (line[index + 1] != ' ' && line[index + 1] != '\0')
 	{
@@ -44,7 +44,7 @@ static void	insert_single_operator_spaces(char *line, int index, int len)
 	}
 }
 
-static void	insert_double_operator_spaces(char *line, int index, int len)
+void	insert_double_operator_spaces(char *line, int index, int len)
 {
 	if (line[index + 2] != ' ' && line[index + 2] != '\0')
 	{
@@ -58,7 +58,7 @@ static void	insert_double_operator_spaces(char *line, int index, int len)
 	}
 }
 
-static void	insert_spaces(char *l, bool qt, int len, int i)
+void	insert_spaces(char *l, bool qt, int len, int i)
 {
 	while (i < len)
 	{
