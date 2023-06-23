@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/23 20:45:29 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 20:54:42 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@
 # define FALSE 0
 
 # define TMP_FILE "/tmp/tmp_file"
+
 typedef struct t_item
 {
 	char			*key;
@@ -172,10 +173,10 @@ void			cleanup_token_list(t_token_list *list);
 void			add_token(t_token_list *list, t_token *node);
 
 bool			is_double_operator(char c1, char c2);
-void		shift_characters_right(char *line, int start, int len);
-void		insert_single_operator_spaces(char *line, int index, int len);
-void		insert_double_operator_spaces(char *line, int index, int len);
-void		insert_spaces(char *l, bool qt, int len, int i);
+void			shift_characters_right(char *line, int start, int len);
+void			insert_single_operator_spaces(char *line, int index, int len);
+void			insert_double_operator_spaces(char *line, int index, int len);
+void			insert_spaces(char *l, bool qt, int len, int i);
 
 // void		expand(char *tokens);
 
