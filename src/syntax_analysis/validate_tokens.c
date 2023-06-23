@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   validate_tokens.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 12:40:00 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/22 19:26:48 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/23 08:46:46 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ void	check_in_out_redirects(int type, t_token *token)
 {
 	if (!token->next)
 		msh_error(5);
-	//TODO: Melhorar isso aqui (cat < Makefile > arquivo, cat > arquivo < Makefile é valido por exemplo, mas alguns outros cenarios nao)
 	else if (token->prev && (token->prev->type != STRING && \
 		token->prev->type < FILE && token->prev->type > END_OF_FILE))
 		msh_error(5);
@@ -58,7 +57,6 @@ void	validate_tokens(t_token_list *tokens_lst)
 	while (i < tokens_lst->count)
 	{
 		check_tokens(token, i);
-		// TODO SEMICOLON
 		if (token->next)
 			token = token->next;
 		i++;

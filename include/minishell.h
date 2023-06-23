@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/22 22:02:05 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/23 09:50:17 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 # include <errno.h>
 # include <sys/wait.h>
 # include <fcntl.h>
+# include <sys/stat.h>
+# include <dirent.h>
 
 # define MSH_LINE_BUFFER_SIZE 1024
 # define MSH_TOKEN_BUFFER_SIZE 64
@@ -122,10 +124,12 @@ void			free_hash_table(void);
 void			export(t_link_cmds	*var);
 void			unset(t_link_cmds	*var);
 void			env(void);
-void			pwd(t_link_cmds	*cmd);
-// void		exit_minishell(void);
+void			pwd(void);
+void			msh_exit(char **argv);
 void			cd(t_link_cmds	*cmd);
 void			echo(t_link_cmds	*cmd);
+
+void			exit_minishell(void);
 
 void			execute(t_link_cmds *cmd, int *fd, bool flag);
 int				syntax_analysis(t_token_list *tokens_lst);
@@ -142,6 +146,8 @@ void			ft_tokenize(
 					bool quotes[2],
 					char *token_start);
 t_token_list	*ft_init_tokenize(char *input);
+void	cleanup_token_list(t_token_list *list);
+void	cleanup_chained_cmd(t_link_cmds *node);
 char			*expand_variables(const char *input, bool is_single_quote);
 bool			is_delimiter(char c);
 bool			is_quote(char c);

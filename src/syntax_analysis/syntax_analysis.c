@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   syntax_analysis.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 12:40:00 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/22 22:07:16 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/23 12:10:19 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,31 +25,44 @@ static bool	has_piped_command(t_link_cmds *current_cmd)
 	return (FALSE);
 }
 
-static void	redirect_out(t_link_cmds *next_cmd, int flags)
+static int	redirect_out(t_link_cmds *next_cmd, int flags)
 {
 	int	fd_open;
 
 	fd_open = open(next_cmd->full_cmd[0], flags, 0777);
 	if (fd_open == -1)
+	{
 		msh_error(1);
+		return 0;
+	}
 	else
 	{
 		dup2(fd_open, OUT);
 		close(fd_open);
+		return 1;
 	}
 }
 
-static void	redirect_in(t_link_cmds *next_cmd, int flags)
+static int	redirect_in(t_link_cmds *next_cmd, int flags)
 {
 	int	fd_open;
 
+	if (access(next_cmd->full_cmd[0], F_OK) == -1)
+	{
+		fprintf(stderr, "%s not found.\n", next_cmd->full_cmd[0]);
+		return 0;
+	}
 	fd_open = open(next_cmd->full_cmd[0], flags);
 	if (fd_open == -1)
+	{
 		msh_error(1);
+		return 0;
+	}
 	else
 	{
 		dup2(fd_open, IN);
 		close(fd_open);
+		return 1;
 	}
 }
 
@@ -119,32 +132,34 @@ static void	heredoc(char *eof, int *fd)
 	close(save_out);
 }
 
-static bool	check_redirections(t_link_cmds *next_cmd, int *fd)
+static int	check_redirections(t_link_cmds *nc, int *fd)
 {
-	bool		changed;
+	int		changed;
 	t_link_cmds	*current_cmd;
 
-	current_cmd = next_cmd;
-	changed = FALSE;
-	while (next_cmd && (next_cmd->type >= FILE && \
-				next_cmd->type <= END_OF_FILE))
+	current_cmd = nc;
+	changed = 0;
+	while (nc && (nc->type >= FILE && nc->type <= END_OF_FILE))
 	{
-		if (next_cmd->type == END_OF_FILE)
-			heredoc(next_cmd->full_cmd[0], fd);
-		next_cmd = next_cmd->next;
+		if (nc->type == END_OF_FILE)
+			heredoc(nc->full_cmd[0], fd);
+		nc = nc->next;
 	}
-	next_cmd = current_cmd;
-	while (next_cmd && (next_cmd->type >= FILE && \
-				next_cmd->type <= END_OF_FILE))
+	nc = current_cmd;
+	while (nc && (nc->type >= FILE && nc->type <= END_OF_FILE))
 	{
-		if (next_cmd->type == FILE)
-			redirect_out(next_cmd, O_WRONLY | O_CREAT | O_TRUNC);
-		else if (next_cmd->type == FILE_A)
-			redirect_out(next_cmd, O_WRONLY | O_CREAT | O_APPEND);
-		else if (next_cmd->type == INPUT_FILE)
-			redirect_in(next_cmd, O_RDONLY | O_CREAT);
-		changed = TRUE;
-		next_cmd = next_cmd->next;
+		if (nc->type == INPUT_FILE && !redirect_in(nc, O_RDONLY))
+				return -1;
+		nc = nc->next;
+	}
+	nc = current_cmd;
+	while (nc && (nc->type >= FILE && nc->type <= END_OF_FILE))
+	{
+		if (nc->type == FILE)
+			changed = redirect_out(nc, O_WRONLY | O_CREAT | O_TRUNC);
+		else if (nc->type == FILE_A)
+			changed = redirect_out(nc, O_WRONLY | O_CREAT | O_APPEND);
+		nc = nc->next;
 	}
 	return (changed);
 }
@@ -155,25 +170,29 @@ void	execute_cmds(t_link_cmds *chained_cmds)
 	int			fd[2];
 	int			saved_stdin;
 	int			saved_stdout;
-	bool		changed;
+	int			changed;
 
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
 	current_cmd = chained_cmds;
+	changed = 0;
 	while (current_cmd && has_piped_command(current_cmd->next) \
 		&& current_cmd->type == STRING)
 	{
 		pipe(fd);
 		changed = check_redirections(current_cmd->next, fd);
-		execute(current_cmd, fd, TRUE);
+		if (changed != -1)
+			execute(current_cmd, fd, TRUE);
+		else
+			break;
+		if (changed == 1)
+			dup2(saved_stdout, STDOUT_FILENO);
 		current_cmd = current_cmd->next;
 		while (current_cmd && current_cmd->type >= FILE && current_cmd->type <= END_OF_FILE)
 			current_cmd = current_cmd->next;
 	}
-	if (changed)
-		dup2(saved_stdout, STDOUT_FILENO);
-	check_redirections(current_cmd->next, fd);
-	execute(current_cmd, fd, FALSE);
+	if (check_redirections(current_cmd->next, fd) != -1)
+		execute(current_cmd, fd, FALSE);
 	dup2(saved_stdin, STDIN_FILENO);
 	dup2(saved_stdout, STDOUT_FILENO);
 	while (current_cmd->next && current_cmd->next->type >= FILE && current_cmd->next->type <= END_OF_FILE)
@@ -186,9 +205,14 @@ void	execute_cmds(t_link_cmds *chained_cmds)
 int	syntax_analysis(t_token_list *tokens_lst)
 {
 	t_link_cmds	*chained_cmds;
+	t_link_cmds *first_node;
 
 	validate_tokens(tokens_lst);
 	chained_cmds = create_cmds(tokens_lst);
+	cleanup_token_list(tokens_lst);
+	first_node = chained_cmds;
 	execute_cmds(chained_cmds);
+	if (first_node)
+		cleanup_chained_cmd(first_node);
 	return (0);
 }

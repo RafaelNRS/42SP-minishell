@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 08:51:20 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/21 21:38:02 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 12:16:38 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ static void	insert_spaces(char *line, bool quote, int len, int i)
 	{
 		if (is_quote(line[i]))
 			quote = !quote;
-		if ((is_operator(line[i]) && quote == false) || is_semi(line[i]))
+		if ((is_operator(line[i]) && quote == false) || (is_semi(line[i]) && quote == false))
 		{
 			if (line[i] == '|' || line[i] == ';')
 				insert_single_operator_spaces(line, i, len);
@@ -196,6 +196,12 @@ void	handle_var_exp(const char **in_ptr, char *var, char **out, bool s_quote)
 		*var_name_ptr = '\0';
 		copy_variable_value(var, out);
 	}
+	else if (**in_ptr == '~' && !s_quote)
+	{
+		(*in_ptr)++;
+		ft_strlcpy(*out, ht_search("HOME"), ft_strlen(ht_search("HOME")) + 1);
+		*out += ft_strlen(ht_search("HOME"));
+	}
 	else
 		*(*out)++ = *(*in_ptr)++;
 }
@@ -242,6 +248,23 @@ t_token	*new_token(char *token)
 		node->type = 0;
 	}
 	return (node);
+}
+
+void	cleanup_token_list(t_token_list *list)
+{
+	t_token	*node;
+	t_token	*next_node;
+
+	node = list->head;
+	while (node->next)
+	{
+		next_node = node->next;
+		if (node->token)
+			free(node->token);
+		free(node);
+		node = next_node;
+	}
+	free(list);
 }
 
 void	add_token(t_token_list *list, t_token *node)

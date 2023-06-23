@@ -3,19 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/23 14:03:45 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/09 22:06:44 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/23 10:24:08 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	pwd(t_link_cmds	*cmd)
+void	pwd(void)
 {
-	if (cmd->count > 1)
-		ft_printf("pwd: too many arguments\n");
-	else
-		ft_printf("%s\n", ht_search("PWD"));
+	char	*buf;
+
+	buf = NULL;
+	ft_printf("%s\n", getcwd(buf, 0));
+	free(buf);
 }

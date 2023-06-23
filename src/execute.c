@@ -3,30 +3,41 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 16:57:01 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/22 22:07:57 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/23 09:44:24 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+bool	can_execute(char *path)
+{
+	struct stat	s_buffer;
+
+	if (!access(path, F_OK) && !stat(path, &s_buffer) \
+		&& ((s_buffer.st_mode & S_IFMT) != S_IFDIR) \
+		&& ((s_buffer.st_mode & S_IXUSR)))
+		return (TRUE);
+	return (FALSE);
+}
+
 char	*ft_get_path(char *cmd)
 {
-	char	**paths;
-	int		i;
-	char	*path;
-	char	*partial_path;
+	char		**paths;
+	int			i;
+	char		*path;
+	char		*partial_path;
 
 	paths = ft_split(ht_search("PATH"), ':');
 	i = 0;
-	while (paths[++i])
+	while (paths[i++])
 	{
 		partial_path = ft_strjoin(paths[i], "/");
 		path = ft_strjoin(partial_path, cmd);
 		free(partial_path);
-		if (!access(path, F_OK))
+		if (can_execute(path))
 			return (path);
 		free(path);
 	}
@@ -66,9 +77,18 @@ void	exec_func(t_link_cmds	*cmd)
 	char	*path;
 	char	**list;
 
-	path = ft_get_path(cmd->full_cmd[0]);
+	if (!ft_strrchr(cmd->full_cmd[0], '.') && !ft_strrchr(cmd->full_cmd[0], '/'))
+		path = ft_get_path(cmd->full_cmd[0]);
+	else
+	{
+		path = cmd->full_cmd[0];
+		if (access(path, F_OK))
+			write(2, "no such file or directory.\n", 28);
+		else if (!can_execute(path))
+			write(2, "Permission denied.\n", 20);
+	}
 	if (!path)
-		write(2, "command not found: ", 19);
+		write(2, "command not found.\n", 20);
 	list = env_list();
 	execve(path, cmd->full_cmd, list);
 }
@@ -92,11 +112,9 @@ void	exec_cmd(t_link_cmds *cmd)
 	if (ft_strncmp(cmd->full_cmd[0], "env\0", 4) == 0)
 		env();
 	else if (ft_strncmp(cmd->full_cmd[0], "pwd\0", 4) == 0)
-		pwd(cmd);
-	// else if (ft_strncmp(cmd->full_cmd[0], "exit\0", 5) == 0)
-	// 	exit_minishell();
-	else if (ft_strncmp(cmd->full_cmd[0], "cd\0", 3) == 0)
-		cd(cmd);
+		pwd();
+	else if (ft_strncmp(cmd->full_cmd[0], "exit\0", 5) == 0)
+		msh_exit(cmd->full_cmd);
 	else if (ft_strncmp(cmd->full_cmd[0], "echo\0", 5) == 0)
 		echo(cmd);
 	else
@@ -113,6 +131,8 @@ void	execute(t_link_cmds	*cmd, int *fd, bool flag)
 		export(cmd);
 	else if (ft_strncmp(cmd->full_cmd[0], "unset\0", 6) == 0)
 		unset(cmd);
+	else if (ft_strncmp(cmd->full_cmd[0], "cd\0", 3) == 0)
+		cd(cmd);
 	else
 	{
 		pid = fork();

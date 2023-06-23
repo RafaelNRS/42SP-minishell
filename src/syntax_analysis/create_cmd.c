@@ -3,14 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   create_cmd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 12:40:00 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/22 19:21:23 by mariana          ###   ########.fr       */
+/*   Updated: 2023/06/23 11:07:51 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	cleanup_chained_cmd(t_link_cmds *node)
+{
+	t_link_cmds *next_node;
+	t_link_cmds *tmp_node;
+
+	next_node = node;
+	while (next_node)
+	{
+		tmp_node = next_node->next;
+		free(next_node);
+		next_node = tmp_node;
+	}
+}
 
 t_link_cmds	*create_chained_cmd(void)
 {
