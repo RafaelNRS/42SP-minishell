@@ -6,78 +6,19 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 16:57:01 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/23 14:09:19 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 20:32:53 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-bool	can_execute(char *path)
-{
-	struct stat	s_buffer;
-
-	if (!access(path, F_OK) && !stat(path, &s_buffer) \
-		&& ((s_buffer.st_mode & S_IFMT) != S_IFDIR) \
-		&& ((s_buffer.st_mode & S_IXUSR)))
-		return (TRUE);
-	return (FALSE);
-}
-
-char	*ft_get_path(char *cmd)
-{
-	char		**paths;
-	int			i;
-	char		*path;
-	char		*partial_path;
-
-	paths = ft_split(ht_search("PATH"), ':');
-	i = 0;
-	while (paths[i++])
-	{
-		partial_path = ft_strjoin(paths[i], "/");
-		path = ft_strjoin(partial_path, cmd);
-		free(partial_path);
-		if (can_execute(path))
-			return (path);
-		free(path);
-	}
-	return (NULL);
-}
-
-char	**env_list(void)
-{
-	int		i;
-	int		j;
-	t_item	*current;
-	char	**env_list;
-
-	i = 0;
-	j = 0;
-	env_list = (char **) malloc((g_msh.env->count + 1) * sizeof(char *));
-	while (i < g_msh.env->count)
-	{
-		current = g_msh.env->bucket_items[j];
-		while (current)
-		{
-			env_list[i] = join_n_strs(3, current->key, "=", current-> value);
-			i++;
-			if (current->next)
-				current = current->next;
-			else
-				break ;
-		}
-		j++;
-	}
-	env_list[i] = NULL;
-	return (env_list);
-}
 
 void	exec_func(t_link_cmds	*cmd)
 {
 	char	*path;
 	char	**list;
 
-	if (!ft_strrchr(cmd->full_cmd[0], '.') && !ft_strrchr(cmd->full_cmd[0], '/'))
+	if (!ft_strrchr(cmd->full_cmd[0], '.') && \
+		!ft_strrchr(cmd->full_cmd[0], '/'))
 		path = ft_get_path(cmd->full_cmd[0]);
 	else
 	{
@@ -93,20 +34,6 @@ void	exec_func(t_link_cmds	*cmd)
 	execve(path, cmd->full_cmd, list);
 }
 
-void	interrupt_signal(int signal)
-{
-	(void)signal;
-	g_msh.error_code = 130;
-	write(2, "\n", 1);
-}
-
-void	quit_signal(int signal)
-{
-	(void)signal;
-	g_msh.error_code = 131;
-	write(2, "\n", 1);
-}
-
 void	exec_cmd(t_link_cmds *cmd)
 {
 	if (ft_strncmp(cmd->full_cmd[0], "env\0", 4) == 0)
@@ -114,17 +41,43 @@ void	exec_cmd(t_link_cmds *cmd)
 	else if (ft_strncmp(cmd->full_cmd[0], "pwd\0", 4) == 0)
 		pwd();
 	else if (ft_strncmp(cmd->full_cmd[0], "echo\0", 5) == 0)
-		echo(cmd);
+		echo(cmd, FALSE, 1);
 	else
 		exec_func(cmd);
+	exit(1);
 }
 
-void	execute(t_link_cmds	*cmd, int *fd, bool flag)
+static void	exec_external(t_link_cmds *cmd, int *fd, bool flag)
 {
 	int	pid;
 	int	status;
 
-	// TODO refactor too big
+	pid = fork();
+	signal(SIGINT, interrupt_signal);
+	signal(SIGQUIT, quit_signal);
+	if (flag)
+	{
+		if (pid == 0)
+		{
+			set_redir_out(fd);
+			exec_cmd(cmd);
+		}
+		waitpid(pid, &status, 0);
+		set_redir_in(fd);
+	}
+	else
+	{
+		if (pid == 0)
+			exec_cmd(cmd);
+		waitpid(pid, &status, 0);
+	}
+	g_msh.error_code = status;
+}
+
+void	execute(t_link_cmds	*cmd, int *fd, bool flag, int exec_flag)
+{	
+	if (exec_flag == -1)
+		return ;
 	if (ft_strncmp(cmd->full_cmd[0], "export\0", 7) == 0)
 		export(cmd);
 	else if (ft_strncmp(cmd->full_cmd[0], "unset\0", 6) == 0)
@@ -134,34 +87,5 @@ void	execute(t_link_cmds	*cmd, int *fd, bool flag)
 	else if (ft_strncmp(cmd->full_cmd[0], "exit\0", 5) == 0)
 		msh_exit(cmd);
 	else
-	{
-		pid = fork();
-		signal(SIGINT, interrupt_signal);
-		signal(SIGQUIT, quit_signal);
-		if (flag)
-		{
-			if (pid == 0)
-			{
-				dup2(fd[1], STDOUT_FILENO);
-				close(fd[0]);
-				close(fd[1]);
-				exec_cmd(cmd);
-				exit(1);
-			}
-			waitpid(pid, &status, 0);
-			dup2(fd[0], STDIN_FILENO);
-			close(fd[0]);
-			close(fd[1]);
-		}
-		else
-		{
-			if (pid == 0)
-			{
-				exec_cmd(cmd);
-				exit(1);
-			}
-			waitpid(pid, &status, 0);
-		}
-		g_msh.error_code = status;
-	}
+		exec_external(cmd, fd, flag);
 }

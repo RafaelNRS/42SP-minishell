@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/23 15:57:55 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/23 18:30:16 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 18:54:16 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static bool	is_number(char *c)
 	return (TRUE);
 }
 
-void	exit_minishell()
+void	exit_minishell(void)
 {
 	free_hash_table();
 	exit(g_msh.error_code);
@@ -37,11 +37,6 @@ void	msh_exit(t_link_cmds *cmd)
 		msh_error(1, "exit", "too many arguments");
 	else if (cmd->count == 2)
 		g_msh.error_code = ft_atoi(cmd->full_cmd[1]);
-
 	cleanup_chained_cmd(cmd);
-	// free(cmd);
-	// free_hash_table();
-	// if (cmd_line)
-	// 	free(cmd_line);
 	exit_minishell();
 }

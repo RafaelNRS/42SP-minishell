@@ -24,7 +24,14 @@ SRC_CLIENT_PATH	= ./src/minishell.c ./src/tokenizer.c \
 									./src/syntax_analysis/ft_strappend.c \
 									./src/syntax_analysis/syntax_analysis.c \
 									./src/syntax_analysis/validate_tokens.c \
-									./src/syntax_analysis/join_n_strs.c
+									./src/syntax_analysis/join_n_strs.c \
+									./src/execute_funcs.c \
+									./src/syntax_analysis/syntax_funcs.c \
+									./src/redir_aux.c \
+									./src/tokenizer_aux.c \
+									./src/tokenizer_aux2.c \
+									./src/tokenizer_aux3.c \
+									./src/tokenizer_aux4.c
 
 BIN						= ./bin/
 BINARY_OUT_PROJ		= ./bin/minishell

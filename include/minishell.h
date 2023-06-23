@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 10:01:47 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/23 18:05:19 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 20:42:49 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 # define MSH_TOKEN_BUFFER_SIZE 64
 # define MAX_TOKENS 256
 # define TABLE_DEFAULT_SIZE 50
+# define NEWLINE_SYNTAX "syntax error near unexpected token `newline'"
 
 // symbols
 # define PIPE 90		// |
@@ -127,16 +128,55 @@ void			env(void);
 void			pwd(void);
 void			msh_exit(t_link_cmds *cmd);
 void			cd(t_link_cmds	*cmd);
-void			echo(t_link_cmds	*cmd);
+void			echo(t_link_cmds	*cmd, bool has_flag_n, int i);
 
 void			exit_minishell(void);
 
-void			execute(t_link_cmds *cmd, int *fd, bool flag);
+void			execute(t_link_cmds	*cmd, int *fd, bool flag, int exec_flag);
 int				syntax_analysis(t_token_list *tokens_lst);
-t_link_cmds		*create_cmds(t_token_list *tokens_lst);
+t_link_cmds		*create_cmds(t_link_cmds *cmds, int cnt, t_token *tk, int c_t);
 char			*ft_strappend(char *s1, char *s2, int space);
 void			validate_tokens(t_token_list *tokens_lst);
 char			*join_n_strs(int count, ...);
+
+bool			can_execute(char *path);
+char			*ft_get_path(char *cmd);
+char			**env_list(void);
+void			interrupt_signal(int signal);
+void			quit_signal(int signal);
+
+bool			has_piped_command(t_link_cmds *current_cmd);
+int				redirect_out(t_link_cmds *next_cmd, int flags);
+int				redirect_in(t_link_cmds *next_cmd, int flags);
+void			heredoc_signal(int signal);
+void			receive_input(int tmp_file, char *eof);
+
+void			set_redir_out(int *fd);
+void			set_redir_in(int *fd);
+
+bool			ft_isalnumvar(char c);
+bool			is_semi(char c);
+bool			is_operator(char c);
+bool			is_quote(char c);
+bool			is_delimiter(char c);
+
+bool			check_s_quote(char *input, bool quotes[2]);
+bool			check_d_quote(char *input, bool quotes[2]);
+char			*remove_outer_quotes(char *str);
+void			copy_variable_value(char *var_name, char **out_ptr);
+void			handle_var_exp(const char **i_p, char *v, char **o, bool s_q);
+
+char			*expand_variables(const char *in_ptr, bool is_single_quote);
+t_token_list	*new_token_list(void);
+t_token			*new_token(char *token);
+void			cleanup_token_list(t_token_list *list);
+void			add_token(t_token_list *list, t_token *node);
+
+bool			is_double_operator(char c1, char c2);
+static void		shift_characters_right(char *line, int start, int len);
+static void		insert_single_operator_spaces(char *line, int index, int len);
+static void		insert_double_operator_spaces(char *line, int index, int len);
+static void		insert_spaces(char *l, bool qt, int len, int i);
 
 // void		expand(char *tokens);
 
@@ -146,8 +186,9 @@ void			ft_tokenize(
 					bool quotes[2],
 					char *token_start);
 t_token_list	*ft_init_tokenize(char *input);
-void	cleanup_token_list(t_token_list *list);
-void	cleanup_chained_cmd(t_link_cmds *node);
+void			cleanup_token_list(t_token_list *list);
+void			cleanup_chained_cmd(t_link_cmds *node);
+t_link_cmds		*create_chained_cmd(void);
 char			*expand_variables(const char *input, bool is_single_quote);
 bool			is_delimiter(char c);
 bool			is_quote(char c);

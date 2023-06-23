@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 12:40:00 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/23 14:33:55 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 19:50:40 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 void	cleanup_chained_cmd(t_link_cmds *node)
 {
-	t_link_cmds *next_node;
-	t_link_cmds *tmp_node;
-	int	i;
+	t_link_cmds	*next_node;
+	t_link_cmds	*tmp_node;
+	int			i;
 
 	next_node = node;
 	while (next_node)
@@ -30,7 +30,7 @@ void	cleanup_chained_cmd(t_link_cmds *node)
 				free(next_node->full_cmd[i]);
 				i++;
 			}
-			free(next_node->full_cmd);			
+			free(next_node->full_cmd);
 		}
 		free(next_node);
 		next_node = tmp_node;
@@ -85,39 +85,30 @@ void	add_chained_cmd(t_link_cmds *list, char *full_cmd, int type, int count)
 	}
 }
 
-t_link_cmds	*create_cmds(t_token_list *tokens_lst)
+t_link_cmds	*create_cmds(t_link_cmds *cmds, int ct, t_token *token, int c_type)
 {
-	t_token		*token;
-	int			current_type;
-	t_link_cmds	*cmds;
 	char		*full_cmd;
-	int			count;
 
-	// TODO refactor esse function pq está grande
-	token = tokens_lst->head;
-	cmds = create_chained_cmd();
-	current_type = token->type;
-	count = 0;
 	while (token)
 	{
 		full_cmd = NULL;
-		while (token->token && current_type == token->type)
+		while (token && token->token && c_type == token->type)
 		{
 			full_cmd = ft_strappend(full_cmd, token->token, TRUE);
-			count++;
+			ct++;
 			if (token->next)
 				token = token->next;
 			else
 				break ;
 		}
-		add_chained_cmd(cmds, full_cmd, current_type, count);
+		add_chained_cmd(cmds, full_cmd, c_type, ct);
 		if (token->type == SEMICOLON)
 			add_chained_cmd(cmds, "SEMICOLON", SEMICOLON, 1);
 		free(full_cmd);
 		if (token->next)
-			current_type = token->next->type;
+			c_type = token->next->type;
 		token = token->next;
-		count = 0;
+		ct = 0;
 	}
 	return (cmds);
 }

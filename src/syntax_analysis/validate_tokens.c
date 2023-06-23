@@ -6,12 +6,11 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 12:40:00 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/23 18:11:34 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 19:51:17 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-# define NEWLINE_SYNTAX "syntax error near unexpected token `newline'"
 
 void	check_in_out_redirects(int type, t_token *token)
 {

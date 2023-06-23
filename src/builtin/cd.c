@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/23 18:22:23 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/23 18:29:38 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 18:36:17 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static void	change_path(char *path)
 		msh_error(1, "cd", "no such file or directory\n");
 		free(path_copy);
 		free(old_pwd);
-		return;
+		return ;
 	}
 	tmp = ft_strjoin("OLDPWD=", old_pwd);
 	add_t_item(tmp);

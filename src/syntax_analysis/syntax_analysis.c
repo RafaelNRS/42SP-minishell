@@ -6,99 +6,11 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 12:40:00 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/23 18:15:01 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 20:20:29 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-static bool	has_piped_command(t_link_cmds *current_cmd)
-{
-	while (current_cmd)
-	{
-		if (current_cmd->type == SEMICOLON)
-			return (FALSE);
-		if (current_cmd->type == STRING)
-			return (TRUE);
-		current_cmd = current_cmd->next;
-	}
-	return (FALSE);
-}
-
-static int	redirect_out(t_link_cmds *next_cmd, int flags)
-{
-	int	fd_open;
-
-	fd_open = open(next_cmd->full_cmd[0], flags, 0777);
-	if (fd_open == -1)
-	{
-		msh_error(1, "minishell", "Permission denied.");
-		return 0;
-	}
-	else
-	{
-		dup2(fd_open, OUT);
-		close(fd_open);
-		return 1;
-	}
-}
-
-static int	redirect_in(t_link_cmds *next_cmd, int flags)
-{
-	int	fd_open;
-
-	if (access(next_cmd->full_cmd[0], F_OK) == -1)
-	{
-		msh_error(1, "minishell", "No such file or directory.");
-		return 0;
-	}
-	fd_open = open(next_cmd->full_cmd[0], flags);
-	if (fd_open == -1)
-	{
-		msh_error(1, "minishell", "Permission denied.");
-		return 0;
-	}
-	else
-	{
-		dup2(fd_open, IN);
-		close(fd_open);
-		return 1;
-	}
-}
-
-void	heredoc_signal(int signal)
-{
-	(void)signal;
-	g_msh.error_code = 130;
-	write(2, "\n", 1);
-	exit(130);
-}
-
-static void	receive_input(int tmp_file, char *eof)
-{
-	char	*input;
-
-	signal(SIGINT, heredoc_signal);
-	while (true)
-	{
-		input = readline("> ");
-		if (!input)
-		{
-			close(tmp_file);
-			exit(0);
-		}
-		if (ft_strncmp(input, eof, ft_strlen(eof)))
-			ft_putendl_fd(input, tmp_file);
-		else
-		{
-			close(tmp_file);
-			free(input);
-			break ;
-		}
-		free(input);
-	}
-	exit (0);
-}
 
 static void	read_tmp_file(void)
 {
@@ -136,7 +48,7 @@ static void	heredoc(char *eof, int *fd)
 
 static int	check_redirections(t_link_cmds *nc, int *fd)
 {
-	int		changed;
+	int			changed;
 	t_link_cmds	*current_cmd;
 
 	current_cmd = nc;
@@ -145,13 +57,8 @@ static int	check_redirections(t_link_cmds *nc, int *fd)
 	{
 		if (nc->type == END_OF_FILE)
 			heredoc(nc->full_cmd[0], fd);
-		nc = nc->next;
-	}
-	nc = current_cmd;
-	while (nc && (nc->type >= FILE && nc->type <= END_OF_FILE))
-	{
 		if (nc->type == INPUT_FILE && !redirect_in(nc, O_RDONLY))
-				return -1;
+			return (-1);
 		nc = nc->next;
 	}
 	nc = current_cmd;
@@ -166,54 +73,48 @@ static int	check_redirections(t_link_cmds *nc, int *fd)
 	return (changed);
 }
 
-void	execute_cmds(t_link_cmds *chained_cmds)
+static void	execute_cmds(t_link_cmds *chain, int o_in, int o_out, int chg)
 {
-	t_link_cmds	*current_cmd;
+	t_link_cmds	*c_c;
 	int			fd[2];
-	int			saved_stdin;
-	int			saved_stdout;
-	int			changed;
 
-	saved_stdin = dup(STDIN_FILENO);
-	saved_stdout = dup(STDOUT_FILENO);
-	current_cmd = chained_cmds;
-	changed = 0;
-	while (current_cmd && has_piped_command(current_cmd->next) \
-		&& current_cmd->type == STRING)
+	c_c = chain;
+	while (c_c && has_piped_command(c_c->next) && c_c->type == STRING)
 	{
 		pipe(fd);
-		changed = check_redirections(current_cmd->next, fd);
-		if (changed != -1)
-			execute(current_cmd, fd, TRUE);
-		else
-			break;
-		if (changed == 1)
-			dup2(saved_stdout, STDOUT_FILENO);
-		current_cmd = current_cmd->next;
-		while (current_cmd && current_cmd->type >= FILE && current_cmd->type <= END_OF_FILE)
-			current_cmd = current_cmd->next;
+		chg = check_redirections(c_c->next, fd);
+		if (chg == -1)
+			break ;
+		execute(c_c, fd, TRUE, chg);
+		if (chg == 1)
+			dup2(o_out, STDOUT_FILENO);
+		c_c = c_c->next;
+		while (c_c && c_c->type >= FILE && c_c->type <= END_OF_FILE)
+			c_c = c_c->next;
 	}
-	if (check_redirections(current_cmd->next, fd) != -1)
-		execute(current_cmd, fd, FALSE);
-	dup2(saved_stdin, STDIN_FILENO);
-	dup2(saved_stdout, STDOUT_FILENO);
-	while (current_cmd->next && current_cmd->next->type >= FILE && current_cmd->next->type <= END_OF_FILE)
-		current_cmd = current_cmd->next;
-	if (current_cmd->next && current_cmd->next->type == SEMICOLON \
-		&& current_cmd->next->next)
-		execute_cmds(current_cmd->next->next);
+	execute(c_c, fd, FALSE, check_redirections(c_c->next, fd));
+	dup2(o_in, STDIN_FILENO);
+	dup2(o_out, STDOUT_FILENO);
+	while (c_c->next && c_c->next->type >= FILE && \
+		c_c->next->type <= END_OF_FILE)
+		c_c = c_c->next;
+	if (c_c->next && c_c->next->type == SEMICOLON && c_c->next->next)
+		execute_cmds(c_c->next->next, dup(STDIN_FILENO), dup(STDOUT_FILENO), 0);
 }
 
 int	syntax_analysis(t_token_list *tokens_lst)
 {
 	t_link_cmds	*chained_cmds;
-	t_link_cmds *first_node;
+	t_link_cmds	*first_node;
+	t_link_cmds	*cmds;
 
 	validate_tokens(tokens_lst);
-	chained_cmds = create_cmds(tokens_lst);
+	cmds = create_chained_cmd();
+	chained_cmds = create_cmds(cmds, 0, \
+		tokens_lst->head, tokens_lst->head->type);
 	cleanup_token_list(tokens_lst);
 	first_node = chained_cmds;
-	execute_cmds(chained_cmds);
+	execute_cmds(chained_cmds, dup(STDIN_FILENO), dup(STDOUT_FILENO), 0);
 	if (first_node)
 		cleanup_chained_cmd(first_node);
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/09 21:17:03 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/23 14:36:25 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 18:54:44 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,6 @@ char	*ht_search(char *key)
 		else
 			current = current->next;
 	}
-	// if (!current)
-	// 	ft_printf("command not found %s\n", key);
 	return (NULL);
 }
 

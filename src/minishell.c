@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/23 18:24:37 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 20:25:44 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ static void	read_cmd_line(char **cmd_line)
 
 	buffer = "\033[1;96mguest@minishell $ \033[0m";
 	*cmd_line = readline(buffer);
-	// TODO: Show current working directory in the terminal, etc...
 }
 
 void	minishell_loop(void)
@@ -75,6 +74,5 @@ int	main(int argc, char **argv)
 	alloc_hash_table(__environ);
 	g_msh.error_code = 0;
 	minishell_loop();
-	// TODO: Perform cleanup
 	return (0);
 }
