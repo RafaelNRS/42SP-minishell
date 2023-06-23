@@ -3,20 +3,25 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/23 14:02:35 by mariana           #+#    #+#             */
-/*   Updated: 2023/05/22 17:00:00 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/14 21:50:22 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	unset(t_token_list *var)
+void	unset(t_link_cmds	*var)
 {
-	t_token *current;
+	char	**var_name;
+	int		i;
 
-	current = var->head->next;
-	while (current != NULL)
-		delete_item(current->token);
+	i = 1;
+	var_name = var->full_cmd;
+	while (var_name[i])
+	{
+		delete_item(var_name[i]);
+		i++;
+	}
 }
