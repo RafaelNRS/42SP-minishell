@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 14:09:25 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/23 18:53:29 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 20:57:36 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ void	echo(t_link_cmds	*cmd, bool has_flag_n, int i)
 {
 	char	**current;
 
-	g_msh.error_code = 0;
 	current = cmd->full_cmd;
 	if (cmd->count > 1 && cmd->full_cmd[1])
 	{

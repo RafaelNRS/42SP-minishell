@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 16:57:01 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/23 20:32:53 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 21:04:43 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,15 +36,27 @@ void	exec_func(t_link_cmds	*cmd)
 
 void	exec_cmd(t_link_cmds *cmd)
 {
+	g_msh.error_code = 0;
 	if (ft_strncmp(cmd->full_cmd[0], "env\0", 4) == 0)
-		env();
-	else if (ft_strncmp(cmd->full_cmd[0], "pwd\0", 4) == 0)
+	{
 		pwd();
+		exit(g_msh.error_code);
+	}	
+	else if (ft_strncmp(cmd->full_cmd[0], "pwd\0", 4) == 0)
+	{
+		pwd();
+		exit(g_msh.error_code);
+	}	
 	else if (ft_strncmp(cmd->full_cmd[0], "echo\0", 5) == 0)
+	{
 		echo(cmd, FALSE, 1);
+		exit(g_msh.error_code);
+	}
 	else
+	{
 		exec_func(cmd);
-	exit(1);
+		exit(1);
+	}
 }
 
 static void	exec_external(t_link_cmds *cmd, int *fd, bool flag)
