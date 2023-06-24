@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: mariana <mariana@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/16 16:57:01 by mariana           #+#    #+#             */
-/*   Updated: 2023/06/23 21:04:43 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/24 01:47:37 by mariana          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,14 +39,14 @@ void	exec_cmd(t_link_cmds *cmd)
 	g_msh.error_code = 0;
 	if (ft_strncmp(cmd->full_cmd[0], "env\0", 4) == 0)
 	{
-		pwd();
+		env();
 		exit(g_msh.error_code);
-	}	
+	}
 	else if (ft_strncmp(cmd->full_cmd[0], "pwd\0", 4) == 0)
 	{
 		pwd();
 		exit(g_msh.error_code);
-	}	
+	}
 	else if (ft_strncmp(cmd->full_cmd[0], "echo\0", 5) == 0)
 	{
 		echo(cmd, FALSE, 1);
@@ -87,7 +87,7 @@ static void	exec_external(t_link_cmds *cmd, int *fd, bool flag)
 }
 
 void	execute(t_link_cmds	*cmd, int *fd, bool flag, int exec_flag)
-{	
+{
 	if (exec_flag == -1)
 		return ;
 	if (ft_strncmp(cmd->full_cmd[0], "export\0", 7) == 0)
