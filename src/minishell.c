@@ -6,7 +6,7 @@
 /*   By: ranascim <ranascim@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 07:31:27 by ranascim          #+#    #+#             */
-/*   Updated: 2023/06/23 20:25:44 by ranascim         ###   ########.fr       */
+/*   Updated: 2023/06/23 21:24:40 by ranascim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static void	read_cmd_line(char **cmd_line)
 {
 	char	*buffer;
 
-	buffer = "\033[1;96mguest@minishell $ \033[0m";
+	buffer = "\033[1;96mcoder@minishell $ \033[0m";
 	*cmd_line = readline(buffer);
 }
 
